@@ -1,16 +1,18 @@
-import { getReactTemplateFiles } from "./code-templates/react-template.js";
-import { getReactRuntimeErrorTemplateFiles } from "./code-templates/react-runtime-error.js";
-import { getReactRouterTemplateFiles } from "./code-templates/react-router-template.js";
+import { reactApp } from "./code-templates/react-template.js";
+import { reactRuntimeErrorApp } from "./code-templates/react-runtime-error.js";
+import { reactRouterApp } from "./code-templates/react-router-template.js";
+import { vanillaJsTodoApp } from "./code-templates/vanilla-js-todo.js";
 import { init, type RunnerFile } from "../index.js";
 
 // Available templates
 const templates = {
-  "react-template": getReactTemplateFiles,
-  "react-runtime-error": getReactRuntimeErrorTemplateFiles,
-  "react-router": getReactRouterTemplateFiles,
+  "react-template": reactApp,
+  "react-runtime-error": reactRuntimeErrorApp,
+  "react-router": reactRouterApp,
+  "vanilla-js-todo": vanillaJsTodoApp,
 };
 
-let { files, entryFile } = getReactTemplateFiles();
+let { files, entryFile } = reactApp;
 
 const rootEl = document.querySelector("#root") as HTMLElement;
 
@@ -46,7 +48,7 @@ templateSelect.style.marginRight = "20px";
 Object.keys(templates).forEach((key) => {
   const option = document.createElement("option");
   option.value = key;
-  const template = templates[key as keyof typeof templates]();
+  const template = templates[key as keyof typeof templates];
   option.textContent = template.templateName;
   templateSelect.appendChild(option);
 });
@@ -124,10 +126,9 @@ let surfpack = init({
 
 // Function to switch templates
 function switchTemplate(templateKey: string) {
-  const templateFn = templates[templateKey as keyof typeof templates];
-  if (!templateFn) return;
+  const template = templates[templateKey as keyof typeof templates];
+  if (!template) return;
 
-  const template = templateFn();
   files = template.files;
   entryFile = template.entryFile;
 

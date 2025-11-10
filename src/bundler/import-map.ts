@@ -1,17 +1,5 @@
 import type { RunnerSourceFile } from "./bundle.js";
-
-const parsePackageJson = (content: string): Record<string, string> | null => {
-  try {
-    const packageData = JSON.parse(content);
-    const dependencies = {
-      ...(packageData.dependencies || {}),
-      ...(packageData.devDependencies || {}),
-    };
-    return dependencies;
-  } catch {
-    return null;
-  }
-};
+import { extractDependencies } from "./extract-package-json.js";
 
 const generateImportMapFromDependencies = (
   dependencies: Record<string, string>
@@ -37,15 +25,16 @@ const generateImportMapFromDependencies = (
         `https://esm.sh/react-dom@${cleanVersion}/client`;
     }
 
+    // @ TODO
     // Add Vue.js runtime imports when Vue is found
-    if (packageName === "vue") {
-      imports["vue/dist/vue.esm-bundler.js"] =
-        `https://esm.sh/vue@${cleanVersion}/dist/vue.esm-bundler.js`;
-      imports["@vue/runtime-dom"] =
-        `https://esm.sh/@vue/runtime-dom@${cleanVersion}`;
-      imports["@vue/runtime-core"] =
-        `https://esm.sh/@vue/runtime-core@${cleanVersion}`;
-    }
+    // if (packageName === "vue") {
+    //   imports["vue/dist/vue.esm-bundler.js"] =
+    //     `https://esm.sh/vue@${cleanVersion}/dist/vue.esm-bundler.js`;
+    //   imports["@vue/runtime-dom"] =
+    //     `https://esm.sh/@vue/runtime-dom@${cleanVersion}`;
+    //   imports["@vue/runtime-core"] =
+    //     `https://esm.sh/@vue/runtime-core@${cleanVersion}`;
+    // }
   }
 
   return imports;
@@ -65,7 +54,7 @@ export const ensureImportMap = (() => {
           file.path === "package.json" ||
           file.path.endsWith("/package.json")
         ) {
-          const dependencies = parsePackageJson(file.content || "");
+          const dependencies = extractDependencies(file.content || "");
           if (dependencies) {
             imports = generateImportMapFromDependencies(dependencies);
             break;

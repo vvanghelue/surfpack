@@ -1,8 +1,7 @@
-export function getReactTemplateFiles() {
-  const files = [];
-  const entryFile = "src/index.tsx";
-
-  files.push(
+export const reactApp = {
+  templateName: "Working React App",
+  description: "Minimal React + TypeScript demo with interactive components",
+  files: [
     {
       path: "package.json",
       content: `{
@@ -52,12 +51,10 @@ createRoot(container).render(
   </React.StrictMode>
 );
 `,
-    }
-  );
-
-  files.push({
-    path: "src/App.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/App.tsx",
+      content: `import React from "react";
 import HelloWorld from "./components/HelloWorld";
 import Counter from "./components/Counter.tsx";
 import { BrowserRouter } from "react-router-dom";
@@ -83,11 +80,10 @@ export default function App() {
     );
 }
 `,
-  });
-
-  files.push({
-    path: "src/components/HelloWorld.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/components/HelloWorld.tsx",
+      content: `import React from "react";
 
 const HelloWorld = ({ name = "React" }) => (
   <section>
@@ -98,11 +94,10 @@ const HelloWorld = ({ name = "React" }) => (
 
 export default HelloWorld;
 `,
-  });
-
-  files.push({
-    path: "src/components/Counter.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/components/Counter.tsx",
+      content: `import React from "react";
 
 const Counter = () => {
   const [count, setCount] = React.useState(0);
@@ -125,11 +120,17 @@ const Counter = () => {
 
 export default Counter;
 `,
-  });
+    },
+    {
+      path: "index.txt",
+      content: `Minimal React + TypeScript demo
 
-  files.push({
-    path: "index.txt",
-    content: `Minimal React + TypeScript demo\n\n- src/index.tsx bootstraps the React root and renders <App />.\n- src/App.tsx wires HelloWorld and Counter components.\n- src/components/HelloWorld.tsx greets the user.\n- src/components/Counter.tsx provides an interactive counter demo.\n`,
-  });
-  return { templateName: "Working React App", files, entryFile };
-}
+- src/index.tsx bootstraps the React root and renders <App />.
+- src/App.tsx wires HelloWorld and Counter components.
+- src/components/HelloWorld.tsx greets the user.
+- src/components/Counter.tsx provides an interactive counter demo.
+`,
+    },
+  ],
+  entryFile: "src/index.tsx",
+};

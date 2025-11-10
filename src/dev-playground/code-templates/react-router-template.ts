@@ -1,8 +1,8 @@
-export function getReactRouterTemplateFiles() {
-  const files = [];
-  const entryFile = "src/index.tsx";
-
-  files.push(
+export const reactRouterApp = {
+  templateName: "React Router Demo",
+  description:
+    "A complete React application demonstrating client-side routing with React Router DOM",
+  files: [
     {
       path: "package.json",
       content: `{
@@ -135,12 +135,10 @@ createRoot(container).render(
   </React.StrictMode>
 );
 `,
-    }
-  );
-
-  files.push({
-    path: "src/App.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/App.tsx",
+      content: `import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
@@ -165,11 +163,10 @@ export default function App() {
   );
 }
 `,
-  });
-
-  files.push({
-    path: "src/components/Layout.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/components/Layout.tsx",
+      content: `import React from "react";
 import Navigation from "./Navigation";
 
 interface LayoutProps {
@@ -189,11 +186,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 export default Layout;
 `,
-  });
-
-  files.push({
-    path: "src/components/Navigation.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/components/Navigation.tsx",
+      content: `import React from "react";
 import { NavLink } from "react-router-dom";
 
 const Navigation: React.FC = () => {
@@ -239,11 +235,10 @@ const Navigation: React.FC = () => {
 
 export default Navigation;
 `,
-  });
-
-  files.push({
-    path: "src/pages/Home.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/pages/Home.tsx",
+      content: `import React from "react";
 
 const Home: React.FC = () => {
   return (
@@ -272,11 +267,10 @@ const Home: React.FC = () => {
 
 export default Home;
 `,
-  });
-
-  files.push({
-    path: "src/pages/About.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/pages/About.tsx",
+      content: `import React from "react";
 
 const About: React.FC = () => {
   return (
@@ -326,11 +320,10 @@ const About: React.FC = () => {
 
 export default About;
 `,
-  });
-
-  files.push({
-    path: "src/pages/Contact.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/pages/Contact.tsx",
+      content: `import React from "react";
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = React.useState({
@@ -453,140 +446,91 @@ const Contact: React.FC = () => {
 
 export default Contact;
 `,
-  });
-
-  files.push({
-    path: "src/pages/Counter.tsx",
-    content: `import React from "react";
+    },
+    {
+      path: "src/pages/Counter.tsx",
+      content: `import React from "react";
 
 const Counter: React.FC = () => {
   const [count, setCount] = React.useState(0);
-  const [history, setHistory] = React.useState<number[]>([0]);
+  const [step, setStep] = React.useState(1);
 
-  const increment = () => {
-    const newCount = count + 1;
-    setCount(newCount);
-    setHistory(prev => [...prev, newCount]);
-  };
-
-  const decrement = () => {
-    const newCount = count - 1;
-    setCount(newCount);
-    setHistory(prev => [...prev, newCount]);
-  };
-
-  const reset = () => {
-    setCount(0);
-    setHistory([0]);
-  };
-
-  const incrementBy = (amount: number) => {
-    const newCount = count + amount;
-    setCount(newCount);
-    setHistory(prev => [...prev, newCount]);
-  };
+  const increment = () => setCount(count + step);
+  const decrement = () => setCount(count - step);
+  const reset = () => setCount(0);
 
   return (
     <div className="page">
-      <h1>Interactive Counter Demo</h1>
-      
-      <div className="counter-section">
-        <h2>Current Count: {count}</h2>
-        <div style={{ marginBottom: "1rem" }}>
-          <button className="counter-button" onClick={() => incrementBy(-10)}>
-            -10
-          </button>
-          <button className="counter-button" onClick={decrement}>
-            -1
-          </button>
-          <button className="counter-button" onClick={increment}>
-            +1
-          </button>
-          <button className="counter-button" onClick={() => incrementBy(10)}>
-            +10
-          </button>
-        </div>
-        <button className="counter-button reset" onClick={reset}>
-          Reset to 0
-        </button>
-      </div>
-
+      <h1>Interactive Counter</h1>
       <div className="card">
-        <h3>Counter Statistics</h3>
-        <ul>
-          <li><strong>Current Value:</strong> {count}</li>
-          <li><strong>Total Operations:</strong> {history.length - 1}</li>
-          <li><strong>Minimum Value:</strong> {Math.min(...history)}</li>
-          <li><strong>Maximum Value:</strong> {Math.max(...history)}</li>
-        </ul>
-      </div>
-
-      {history.length > 1 && (
-        <div className="card">
-          <h3>Operation History</h3>
-          <p><em>Last 10 values:</em></p>
-          <div style={{ 
-            display: "flex", 
-            gap: "0.5rem", 
-            flexWrap: "wrap",
-            fontFamily: "monospace",
-            fontSize: "1.1rem"
-          }}>
-            {history.slice(-10).map((value, index, arr) => (
-              <span 
-                key={index} 
-                style={{ 
-                  padding: "0.25rem 0.5rem",
-                  backgroundColor: index === arr.length - 1 ? "#007bff" : "#f8f9fa",
-                  color: index === arr.length - 1 ? "white" : "#333",
-                  borderRadius: "4px",
-                  border: "1px solid #dee2e6"
-                }}
-              >
-                {value}
-              </span>
-            ))}
+        <p>This is an interactive counter component demonstrating state management.</p>
+        
+        <div className="counter-section">
+          <h2>Count: {count}</h2>
+          
+          <div style={{ marginBottom: "1rem" }}>
+            <label htmlFor="step" style={{ display: "block", marginBottom: "0.5rem" }}>
+              Step size:
+            </label>
+            <input
+              id="step"
+              type="number"
+              value={step}
+              onChange={(e) => setStep(Number(e.target.value))}
+              min="1"
+              style={{
+                padding: "0.5rem",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                width: "100px"
+              }}
+            />
+          </div>
+          
+          <div>
+            <button onClick={increment} className="counter-button">
+              + {step}
+            </button>
+            <button onClick={decrement} className="counter-button">
+              - {step}
+            </button>
+            <button onClick={reset} className="counter-button reset">
+              Reset
+            </button>
           </div>
         </div>
-      )}
+      </div>
+      
+      <div className="card">
+        <h3>Counter Information</h3>
+        <ul>
+          <li>Current value: <strong>{count}</strong></li>
+          <li>Is positive: <strong>{count > 0 ? "Yes" : "No"}</strong></li>
+          <li>Is even: <strong>{count % 2 === 0 ? "Yes" : "No"}</strong></li>
+          <li>Absolute value: <strong>{Math.abs(count)}</strong></li>
+        </ul>
+      </div>
     </div>
   );
 };
 
 export default Counter;
 `,
-  });
-
-  files.push({
-    path: "src/pages/NotFound.tsx",
-    content: `import React from "react";
-import { Link, useLocation } from "react-router-dom";
+    },
+    {
+      path: "src/pages/NotFound.tsx",
+      content: `import React from "react";
+import { Link } from "react-router-dom";
 
 const NotFound: React.FC = () => {
-  const location = useLocation();
-
   return (
-    <div className="page error-page">
-      <div className="card">
+    <div className="page">
+      <div className="error-page">
         <h1>404 - Page Not Found</h1>
-        <p>
-          The page <code>{location.pathname}</code> does not exist.
-        </p>
-        <p>
-          <Link to="/" style={{ color: "#007bff", textDecoration: "none" }}>
-            ← Go back to Home
-          </Link>
-        </p>
-      </div>
-      
-      <div className="card">
-        <h2>Available Pages:</h2>
-        <ul style={{ textAlign: "left", display: "inline-block" }}>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/contact">Contact</Link></li>
-          <li><Link to="/counter">Counter Demo</Link></li>
-        </ul>
+        <p>The page you're looking for doesn't exist.</p>
+        <Link to="/" className="counter-button" style={{ textDecoration: "none", display: "inline-block" }}>
+          Go Home
+        </Link>
       </div>
     </div>
   );
@@ -594,38 +538,32 @@ const NotFound: React.FC = () => {
 
 export default NotFound;
 `,
-  });
+    },
+    {
+      path: "index.txt",
+      content: `React Router Demo Application
 
-  files.push({
-    path: "index.txt",
-    content: `React Router DOM Demo Application
-
-This demo showcases a complete React application with client-side routing using React Router DOM v6.
+This is a comprehensive React application demonstrating client-side routing with React Router DOM v7.
 
 Features:
-- BrowserRouter for clean URLs (no hash fragments)
-- Multiple pages with navigation
-- Active link highlighting
-- Layout components with shared navigation
+- BrowserRouter for modern routing
+- Navigation with active link highlighting  
+- Multiple pages with different content
 - 404 error handling for unknown routes
-- Interactive forms and state management
-- Modern TypeScript and React patterns
+- Interactive counter component
+- Contact form with state management
+- Responsive layout with modern CSS
 
-Pages included:
-- Home: Welcome page with feature overview
-- About: Technical information and project structure
-- Contact: Interactive contact form with state management
-- Counter: Advanced counter demo with history tracking
-- 404: Error page for unmatched routes
+The application includes:
+- src/index.tsx: Application bootstrap
+- src/App.tsx: Main app with router setup  
+- src/components/Layout.tsx: Layout wrapper
+- src/components/Navigation.tsx: Navigation component
+- src/pages/: Individual page components
+- src/style.css: Application styling
 
-The application demonstrates proper React Router patterns including:
-- Route configuration with nested routing
-- NavLink for navigation with active states
-- useLocation hook for accessing current route
-- Form handling and state management
-- Responsive design with modern CSS
-`,
-  });
-
-  return { templateName: "React Router Demo", files, entryFile };
-}
+Perfect for learning React Router concepts and patterns.`,
+    },
+  ],
+  entryFile: "src/index.tsx",
+};

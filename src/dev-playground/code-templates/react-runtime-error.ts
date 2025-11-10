@@ -1,8 +1,8 @@
-export function getReactRuntimeErrorTemplateFiles() {
-  const files = [];
-  const entryFile = "src/index.tsx";
-
-  files.push(
+export const reactRuntimeErrorApp = {
+  templateName: "React Runtime Error Demo",
+  description:
+    "Ultra basic React app with runtime errors for testing error handling and debugging capabilities",
+  files: [
     {
       path: "package.json",
       content: `{
@@ -128,13 +128,18 @@ if (!container) {
 
 createRoot(container).render(<App />);
 `,
-    }
-  );
+    },
+    {
+      path: "index.txt",
+      content: `Ultra basic React app with runtime errors
 
-  files.push({
-    path: "index.txt",
-    content: `Ultra basic React app with runtime errors\n\nThis is a single-file React application that demonstrates various runtime errors:\n- Component errors that can be caught by error boundaries\n- Type errors from calling methods on wrong types\n- Infinite loops that can freeze the browser\n\nUse this template to test error handling and debugging features.`,
-  });
+This is a single-file React application that demonstrates various runtime errors:
+- Component errors that can be caught by error boundaries
+- Type errors from calling methods on wrong types
+- Infinite loops that can freeze the browser
 
-  return { templateName: "React Runtime Error Demo", files, entryFile };
-}
+Use this template to test error handling and debugging features.`,
+    },
+  ],
+  entryFile: "src/index.tsx",
+};
