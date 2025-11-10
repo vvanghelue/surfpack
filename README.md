@@ -4,11 +4,29 @@
 
 Surfpack is a modern browser-based bundler that allows developers to write and run TypeScript/JavaScript code directly in the browser without complex build setups.
 
-## 🌐 Online Demo
+---
 
-Try Surfpack instantly in your browser:
+# 🌐 Try It Online!
 
-**[🚀 Launch Online Demo](https://vvanghelue.github.io/surfpack/online/online-demo.html)**
+### ✨ **No installation required** - Experience Surfpack instantly in your browser
+
+<div align="center">
+
+## **[🚀 Launch Online Demo](https://vvanghelue.github.io/surfpack/online/online-demo.html)**
+
+_Write TypeScript, import React, see results instantly_
+
+</div>
+
+**What you can do:**
+
+- 📝 Write TypeScript/JavaScript code with full syntax highlighting
+- 📦 Import npm packages directly (React, Lodash, etc.)
+- ⚡ See instant results without any build step
+- 🎯 Test multiple files and modules
+- 🔄 Experience real-time bundling in the browser
+
+---
 
 ## 🚀 Development
 
