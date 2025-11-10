@@ -48,6 +48,7 @@ export function init(options: InitOptions) {
   let isIframeReady = false;
   let pendingFiles: RunnerFile[] | null = null;
   let currentFiles: RunnerFile[] = [...options.files];
+  let currentEntryFile: string | undefined = options.entryFile;
 
   // Define sendFiles function first
   const postMessage = (message: MessageToIframe) => {
@@ -89,7 +90,7 @@ export function init(options: InitOptions) {
       );
       if (fileIndex >= 0) {
         currentFiles[fileIndex] = updatedFile;
-        sendFiles(currentFiles, options.entryFile);
+        sendFiles(currentFiles, currentEntryFile);
       }
     });
 
@@ -97,13 +98,11 @@ export function init(options: InitOptions) {
     if (ui.fileBrowser) {
       ui.fileBrowser.setFiles(currentFiles);
       // Select the entry file by default
-      if (options.entryFile) {
-        const entryFile = currentFiles.find(
-          (f) => f.path === options.entryFile
-        );
+      if (currentEntryFile) {
+        const entryFile = currentFiles.find((f) => f.path === currentEntryFile);
         if (entryFile && ui.codeEditor) {
           ui.codeEditor.loadFile(entryFile);
-          ui.fileBrowser.selectFile(options.entryFile);
+          ui.fileBrowser.selectFile(currentEntryFile);
         }
       } else if (currentFiles.length > 0 && ui.codeEditor) {
         ui.codeEditor.loadFile(currentFiles[0]);
@@ -149,10 +148,10 @@ export function init(options: InitOptions) {
         }
         // Send pending files if any
         if (pendingFiles) {
-          sendFiles(pendingFiles, options.entryFile);
+          sendFiles(pendingFiles, currentEntryFile);
           pendingFiles = null;
         } else {
-          sendFiles(currentFiles, options.entryFile);
+          sendFiles(currentFiles, currentEntryFile);
         }
         break;
 
@@ -196,11 +195,12 @@ export function init(options: InitOptions) {
 
     updateFiles(files: RunnerFile[], entry?: string) {
       currentFiles = [...files];
+      currentEntryFile = entry;
       if (ui?.fileBrowser) {
         ui.fileBrowser.setFiles(currentFiles);
 
         // Update the code editor with the entry file or first file
-        const entryFile = entry || options.entryFile;
+        const entryFile = entry;
         if (entryFile && ui.codeEditor) {
           const fileToLoad = currentFiles.find((f) => f.path === entryFile);
           if (fileToLoad) {
@@ -230,7 +230,7 @@ export function init(options: InitOptions) {
         ui.fileBrowser.setFiles(currentFiles);
       }
 
-      sendFiles(currentFiles, options.entryFile);
+      sendFiles(currentFiles, currentEntryFile);
     },
 
     get isReady() {

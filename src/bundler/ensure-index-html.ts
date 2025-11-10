@@ -15,13 +15,45 @@ export function extractHeadElements(
     }
 
     const elements = Array.from(head.children) as HTMLElement[];
+    const filteredElements = elements.filter(
+      (element) => !shouldExcludeElement(element)
+    );
 
     return {
-      elements,
+      elements: filteredElements,
     };
   } catch (error) {
     return null;
   }
+}
+
+function isRelativePath(path: string): boolean {
+  // A path is considered relative if it doesn't start with:
+  // - http:// or https:// (absolute URLs)
+  // - // (protocol-relative URLs)
+  // - / (root-relative paths)
+  return (
+    !path.startsWith("http://") &&
+    !path.startsWith("https://") &&
+    !path.startsWith("//") &&
+    !path.startsWith("/")
+  );
+}
+
+function shouldExcludeElement(element: HTMLElement): boolean {
+  const tagName = element.tagName.toLowerCase();
+
+  if (tagName === "link") {
+    const href = element.getAttribute("href");
+    return href ? isRelativePath(href) : false;
+  }
+
+  if (tagName === "script") {
+    const src = element.getAttribute("src");
+    return src ? isRelativePath(src) : false;
+  }
+
+  return false;
 }
 
 export function extractBodyContent(htmlString: string): HTMLElement[] {
@@ -34,7 +66,8 @@ export function extractBodyContent(htmlString: string): HTMLElement[] {
       return [];
     }
 
-    return Array.from(body.children) as HTMLElement[];
+    const elements = Array.from(body.children) as HTMLElement[];
+    return elements.filter((element) => !shouldExcludeElement(element));
   } catch (error) {
     return [];
   }

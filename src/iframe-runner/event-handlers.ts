@@ -46,6 +46,7 @@ const handleFilesUpdate = async (
 
   try {
     console.log("Building preview...");
+    debugger;
     const { code, css } = await buildBundle(files, entry);
     if (token !== buildCounter) {
       return;

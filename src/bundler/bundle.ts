@@ -15,7 +15,10 @@ import type { Plugin } from "esbuild";
 import { RunnerSourceFile } from "./source-file.js";
 import { packageJsonExtractMainEntry } from "./extract-package-json.js";
 import { ensureIndexHtml } from "./ensure-index-html.js";
-import { extractFileEntryFromHtml } from "./extract-html.js";
+import {
+  extractCssLoadedInHtml,
+  extractFileEntryFromHtml,
+} from "./extract-html.js";
 export interface BundleOutput {
   code: string;
   css: string[];
@@ -144,12 +147,10 @@ export const buildBundle = async (
       // some heuristics on the presence of a <script/> with a src attribute matching a file
       entry = extractFileEntryFromHtml(fileMap.get("index.html") || "", files);
       console.log({ entryFromHtml: entry });
-      debugger;
     }
   }
 
   console.log({ entry });
-  debugger;
 
   const entryPath = normalizePath(entry);
   if (!entryPath || !fileMap.has(entryPath)) {
@@ -191,6 +192,24 @@ export const buildBundle = async (
       }
     }
 
+    // extract css present in index.html and put it in cssOutputs
+    if (fileMap.has("index.html")) {
+      const htmlContent = fileMap.get("index.html") || "";
+      const { linkedFiles, inlineStyles } = extractCssLoadedInHtml(
+        htmlContent,
+        files
+      );
+
+      cssOutputs.push(...inlineStyles);
+
+      for (const linkedFile of linkedFiles) {
+        const cssContent = fileMap.get(linkedFile);
+        if (cssContent) {
+          cssOutputs.push(cssContent);
+        }
+      }
+    }
+
     return { code: jsOutput, css: cssOutputs };
   } catch (error) {
     throw new CompilationError(error?.toString() || "");
@@ -203,6 +222,19 @@ export const runBundle = async (
   files: ReadonlyArray<RunnerSourceFile>
 ): Promise<void> => {
   clearErrorOverlay();
+
+  // more heuristics for practicality
+  document.body.innerHTML = `
+    <div id="root"></div>
+    <div id="app"></div>
+  `;
+
+  const indexHtmlFile = files.find((file) => file.path === "index.html");
+  if (indexHtmlFile) {
+    ensureIndexHtml(document, indexHtmlFile.content ?? "");
+  }
+
+  console.log({ cssChunks });
   applyCss(cssChunks);
 
   if (currentModuleUrl) {
@@ -212,12 +244,6 @@ export const runBundle = async (
 
   // @TODO what to do about it ? necessseary ?
   // resetRoot();
-
-  const indexHtmlFile = files.find((file) => file.path === "index.html");
-  console.log({ indexHtmlFile });
-  if (indexHtmlFile) {
-    ensureIndexHtml(document, indexHtmlFile.content ?? "");
-  }
 
   const blob = new Blob([bundleCode], { type: "application/javascript" });
   const url = URL.createObjectURL(blob);
