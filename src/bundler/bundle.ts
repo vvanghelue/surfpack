@@ -1,4 +1,3 @@
-import { applyCss, resetRoot } from "./dom.js";
 import { clearErrorOverlay, showErrorOverlay } from "./error-handler.js";
 import { ensureEsbuild, type Esbuild } from "./esbuild.js";
 import { ensureImportMap } from "./import-map.js";
@@ -10,19 +9,49 @@ import {
   resolveToExistingPath,
 } from "./path-utils.js";
 import type { Plugin } from "esbuild";
-
-export interface RunnerSourceFile {
-  path: string;
-  content?: string;
-}
-
+import { RunnerSourceFile } from "./source-file.js";
 export interface BundleOutput {
   code: string;
   css: string[];
-  warnings: string[];
 }
 
+//@TODO transform to instances
 let currentModuleUrl: string | null = null;
+let rootEl = document.getElementById("root");
+let currentStyleElements: HTMLStyleElement[] = [];
+
+export const resetRoot = (): void => {
+  if (!(rootEl instanceof HTMLElement)) {
+    return;
+  }
+  const fresh = rootEl.cloneNode(false) as HTMLElement;
+  rootEl.replaceWith(fresh);
+  rootEl = fresh;
+};
+
+export const applyCss = (cssChunks: readonly string[] | undefined): void => {
+  if (currentStyleElements.length) {
+    for (const styleEl of currentStyleElements) {
+      styleEl.remove();
+    }
+    currentStyleElements = [];
+  }
+
+  if (!cssChunks?.length) {
+    return;
+  }
+
+  for (const cssText of cssChunks) {
+    if (!cssText.trim()) {
+      continue;
+    }
+    const styleEl = document.createElement("style");
+    styleEl.type = "text/css";
+    styleEl.textContent = cssText;
+    document.head.appendChild(styleEl);
+    currentStyleElements.push(styleEl);
+  }
+};
 
 const createVirtualFsPlugin = (
   fileMap: Map<string, string>,
@@ -115,13 +144,6 @@ export const buildBundle = async (
     plugins: [virtualFsPlugin],
   });
 
-  const warnings = result.warnings.length
-    ? await esbuild.formatMessages(result.warnings, {
-        kind: "warning",
-        color: false,
-      })
-    : [];
-
   const outputFiles = result.outputFiles ?? [];
   const cssOutputs: string[] = [];
   let jsOutput = "";
@@ -136,7 +158,7 @@ export const buildBundle = async (
     }
   }
 
-  return { code: jsOutput, css: cssOutputs, warnings };
+  return { code: jsOutput, css: cssOutputs };
 };
 
 export const runBundle = async (

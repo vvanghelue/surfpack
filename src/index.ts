@@ -1,7 +1,12 @@
+import {
+  MessageFilesUpdate,
+  MessageFromIframe,
+  MessageToIframe,
+} from "./iframe-runner/iframe-messaging.js";
 import { UiOptions, createUi } from "./ui/ui.js";
 
-export * from "./bundler/iframe-runner.js";
-export * from "./bundler/standalone-runner.js";
+export * from "./iframe-runner/iframe-runner.js";
+export * from "./standalone-runner/standalone-runner.js";
 export * from "./ui/ui.js";
 
 export interface RunnerFile {
@@ -30,26 +35,6 @@ export type InitOptions = {
   ui?: UiOptions;
 };
 
-type BundlerMessage =
-  | { type: "iframe-ready" }
-  | {
-      type: "build-result-ack";
-      payload: {
-        fileCount: number;
-        success: boolean;
-        warnings?: readonly string[];
-        error?: string;
-      };
-    };
-
-type FilesUpdateMessage = {
-  type: "files-update";
-  payload: {
-    files: RunnerFile[];
-    entry?: string;
-  };
-};
-
 function createIframe(): HTMLIFrameElement {
   const iframe = document.createElement("iframe");
   iframe.style.width = "100%";
@@ -65,7 +50,7 @@ export function init(options: InitOptions) {
   let currentFiles: RunnerFile[] = [...options.files];
 
   // Define sendFiles function first
-  const postMessage = (message: FilesUpdateMessage) => {
+  const postMessage = (message: MessageToIframe) => {
     if (iframe?.contentWindow && isIframeReady) {
       iframe.contentWindow.postMessage(message, "*");
     }
@@ -77,7 +62,7 @@ export function init(options: InitOptions) {
       return;
     }
 
-    const message: FilesUpdateMessage = {
+    const message: MessageFilesUpdate = {
       type: "files-update",
       payload: {
         files: files,
@@ -147,7 +132,7 @@ export function init(options: InitOptions) {
       return;
     }
 
-    const data = event.data as BundlerMessage;
+    const data = event.data as MessageFromIframe;
 
     if (options.debugMode) {
       console.log("[Runner] Received message:", data);
@@ -176,9 +161,6 @@ export function init(options: InitOptions) {
           if (options.onBundleComplete) {
             options.onBundleComplete({
               fileCount: data.payload.fileCount,
-              warnings: data.payload.warnings
-                ? [...data.payload.warnings]
-                : undefined,
             });
           }
         } else {

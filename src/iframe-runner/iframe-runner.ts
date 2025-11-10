@@ -1,6 +1,6 @@
-import { postToParent } from "./dom.js";
 import { registerParentMessageListener } from "./event-handlers.js";
-import { installGlobalErrorHandler } from "./error-handler.js";
+import { installGlobalErrorHandler } from "../bundler/error-handler.js";
+import { postToParent } from "./iframe-messaging.js";
 
 export function iframeRunner() {
   installGlobalErrorHandler();

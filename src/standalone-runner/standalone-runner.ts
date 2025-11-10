@@ -1,8 +1,7 @@
-import { buildBundle, runBundle, RunnerSourceFile } from "./bundle";
-import { sanitizeFiles } from "./event-handlers";
+import { buildBundle, runBundle } from "../bundler/bundle";
+import { RunnerSourceFile, sanitizeFiles } from "../bundler/source-file";
 
 type StandaloneRunnerOptions = {
-  container: HTMLElement;
   files: RunnerSourceFile[];
   entryFile?: string;
 };

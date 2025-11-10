@@ -1,5 +1,5 @@
-import type { RunnerSourceFile } from "./bundle.js";
 import { extractDependencies } from "./extract-package-json.js";
+import { RunnerSourceFile } from "./source-file.js";
 
 const generateImportMapFromDependencies = (
   dependencies: Record<string, string>
