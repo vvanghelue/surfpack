@@ -4,6 +4,12 @@
 
 Surfpack is a modern browser-based bundler that allows developers to write and run TypeScript/JavaScript code directly in the browser without complex build setups.
 
+## 🌐 Online Demo
+
+Try Surfpack instantly in your browser:
+
+**[🚀 Launch Online Demo](https://vvanghelue.github.io/surfpack/online/online-demo.html)**
+
 ## 🚀 Development
 
 ### Prerequisites
@@ -172,7 +178,3 @@ dist/
 5. Build for production: `npm run build:prod`
 6. Commit and push: `git commit -am "Add feature" && git push`
 7. Create a Pull Request
-
----
-
-Built with ❤️ using [Rolldown](https://rolldown.rs/)
