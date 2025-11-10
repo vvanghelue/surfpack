@@ -1,0 +1,29 @@
+{
+  "name": "surfpack",
+  "version": "1.0.0",
+  "description": "Run your JavaScript/TypeScript code directly in the browser with zero bundling.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf dist && tsc --project tsconfig.json",
+    "dev-serve": "serve ./ -l 5101",
+    "dev-watch": "tsc --watch --preserveWatchOutput --project tsconfig.json",
+    "dev": "npm run build && concurrently -k \"npm:dev-watch\" \"npm:dev-serve\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@codemirror/lang-javascript": "^6.2.4",
+    "codemirror": "^6.0.2",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.26.0",
+    "rimraf": "^5.0.1",
+    "serve": "^14.2.0",
+    "typescript": "^5.6.3"
+  }
+}

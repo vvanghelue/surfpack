@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Builder</title>
+    <style>
+      #messages {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        min-height: 100px;
+        background: #0f172a;
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <pre id="messages" aria-live="polite">Waiting for bundle...</pre>
+    <script type="module">
+      import { initBundler } from "./dist/bundler/bundler.js";
+      initBundler();
+    </script>
+  </body>
+</html>
