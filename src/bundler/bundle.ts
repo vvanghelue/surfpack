@@ -14,8 +14,15 @@ export interface BundleOutput {
   code: string;
   css: string[];
 }
+export class CompilationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CompilationError";
+  }
+}
 
-//@TODO transform to instances
+// no need to remove this singleton, multiple instance create multiple iframes
+// and standalone mode is singleton by principle
 let currentModuleUrl: string | null = null;
 let rootEl = document.getElementById("root");
 let currentStyleElements: HTMLStyleElement[] = [];
@@ -128,37 +135,41 @@ export const buildBundle = async (
 
   const virtualFsPlugin = createVirtualFsPlugin(fileMap, entryPath);
 
-  const result = await esbuild.build({
-    entryPoints: [entryPath],
-    write: false,
-    bundle: true,
-    format: "esm",
-    platform: "browser",
-    target: ["es2022"],
-    jsx: "automatic",
-    jsxImportSource: "react",
-    sourcemap: "inline",
-    logLevel: "silent",
-    outdir: "/",
-    assetNames: "[name]",
-    plugins: [virtualFsPlugin],
-  });
+  try {
+    const result = await esbuild.build({
+      entryPoints: [entryPath],
+      write: false,
+      bundle: true,
+      format: "esm",
+      platform: "browser",
+      target: ["es2022"],
+      jsx: "automatic",
+      jsxImportSource: "react",
+      sourcemap: "inline",
+      logLevel: "silent",
+      outdir: "/",
+      assetNames: "[name]",
+      plugins: [virtualFsPlugin],
+    });
 
-  const outputFiles = result.outputFiles ?? [];
-  const cssOutputs: string[] = [];
-  let jsOutput = "";
+    const outputFiles = result.outputFiles ?? [];
+    const cssOutputs: string[] = [];
+    let jsOutput = "";
 
-  for (const file of outputFiles) {
-    if (file.path.endsWith(".css")) {
-      cssOutputs.push(file.text);
-      continue;
+    for (const file of outputFiles) {
+      if (file.path.endsWith(".css")) {
+        cssOutputs.push(file.text);
+        continue;
+      }
+      if (!jsOutput) {
+        jsOutput = file.text;
+      }
     }
-    if (!jsOutput) {
-      jsOutput = file.text;
-    }
+
+    return { code: jsOutput, css: cssOutputs };
+  } catch (error) {
+    throw new CompilationError(error?.toString() || "");
   }
-
-  return { code: jsOutput, css: cssOutputs };
 };
 
 export const runBundle = async (

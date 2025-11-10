@@ -1,3 +1,4 @@
+import { CompilationError } from "./bundle.js";
 import { renderOverlay } from "./error-overlay.js";
 
 const OVERLAY_TITLE = "Runtime Error";
@@ -35,6 +36,13 @@ const normalizeError = (value: unknown): NormalizedError => {
 const handleRuntimeError = (value: unknown, origin?: string): void => {
   console.error(value);
   const { message, stack } = normalizeError(value);
+  if (value instanceof CompilationError) {
+    const title = origin
+      ? `Compilation Error (${origin})`
+      : "Compilation Error";
+    renderOverlay(title, message, stack);
+    return;
+  }
   const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
   renderOverlay(title, message, stack);
 };

@@ -11,7 +11,7 @@ export type UiOptions = {
   showCodeEditor?: boolean;
   showFileBrowser?: boolean;
   showNavigator?: boolean;
-  showDebugLogMessages?: boolean;
+  // showDebugLogMessages?: boolean; // not implemented yet
 };
 
 export interface UiComponent {
@@ -52,7 +52,7 @@ export function createUi(
     showCodeEditor = true,
     showFileBrowser = true,
     showNavigator = true,
-    showDebugLogMessages = false,
+    // showDebugLogMessages = false, // not implemented yet
   } = options;
 
   // Apply styles

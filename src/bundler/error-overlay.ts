@@ -21,8 +21,8 @@ const ensureOverlay = (): HTMLDivElement => {
   overlay.style.position = "fixed";
   overlay.style.inset = "0";
   overlay.style.zIndex = "2147483647";
-  overlay.style.background = "rgba(94, 0, 0, 0.85)";
-  overlay.style.color = "#fff";
+  overlay.style.background = "rgba(0, 0, 0, 0.9)";
+  overlay.style.color = "#f8f8f2";
   overlay.style.padding = "32px";
   overlay.style.overflowY = "auto";
   overlay.style.fontFamily =
@@ -48,6 +48,7 @@ export const renderOverlay = (
   heading.textContent = title;
   heading.style.fontSize = "20px";
   heading.style.fontWeight = "700";
+  heading.style.color = "#ff5555";
 
   const summary = document.createElement("div");
   summary.innerHTML = escapeHtml(message);
@@ -59,7 +60,7 @@ export const renderOverlay = (
   stackBlock.style.margin = "0";
   stackBlock.style.padding = "20px";
   stackBlock.style.borderRadius = "12px";
-  stackBlock.style.background = "rgba(84, 0, 0, 0.68)";
+  stackBlock.style.background = "rgba(40, 40, 40, 0.8)";
   stackBlock.style.fontSize = "14px";
   stackBlock.style.lineHeight = "1.5";
   stackBlock.style.whiteSpace = "pre-wrap";
