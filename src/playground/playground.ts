@@ -98,7 +98,7 @@ rootEl.appendChild(uiContainer);
 
 // Initialize the runner with UI
 let surfpack = init({
-  bundlerUrl: "./dev-bundler.html",
+  bundlerUrl: "./playground-bundler.html",
   container: uiContainer,
   files: files as RunnerFile[],
   entryFile: entryFile,
