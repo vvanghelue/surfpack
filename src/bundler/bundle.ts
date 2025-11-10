@@ -13,6 +13,9 @@ import {
 } from "./path-utils.js";
 import type { Plugin } from "esbuild";
 import { RunnerSourceFile } from "./source-file.js";
+import { packageJsonExtractMainEntry } from "./extract-package-json.js";
+import { ensureIndexHtml } from "./ensure-index-html.js";
+import { extractFileEntryFromHtml } from "./extract-html.js";
 export interface BundleOutput {
   code: string;
   css: string[];
@@ -27,17 +30,17 @@ export class CompilationError extends Error {
 // no need to remove this singleton, multiple instance create multiple iframes
 // and standalone mode is singleton by principle
 let currentModuleUrl: string | null = null;
-let rootEl = document.getElementById("root");
+// let rootEl = document.getElementById("root");
 let currentStyleElements: HTMLStyleElement[] = [];
 
-export const resetRoot = (): void => {
-  if (!(rootEl instanceof HTMLElement)) {
-    return;
-  }
-  const fresh = rootEl.cloneNode(false) as HTMLElement;
-  rootEl.replaceWith(fresh);
-  rootEl = fresh;
-};
+// const resetRoot = (): void => {
+//   if (!(rootEl instanceof HTMLElement)) {
+//     return;
+//   }
+//   const fresh = rootEl.cloneNode(false) as HTMLElement;
+//   rootEl.replaceWith(fresh);
+//   rootEl = fresh;
+// };
 
 export const applyCss = (cssChunks: readonly string[] | undefined): void => {
   if (currentStyleElements.length) {
@@ -119,8 +122,8 @@ const createVirtualFsPlugin = (
 });
 
 export const buildBundle = async (
-  files: ReadonlyArray<RunnerSourceFile>,
-  entry: string
+  files: RunnerSourceFile[],
+  entry?: string
 ): Promise<BundleOutput> => {
   const esbuild = await ensureEsbuild();
   const fileMap = new Map<string, string>();
@@ -128,12 +131,31 @@ export const buildBundle = async (
     if (!file || typeof file.path !== "string") {
       continue;
     }
-    fileMap.set(normalizePath(file.path), file.content ?? "");
+    fileMap.set(normalizePath(file.path), file.content);
   }
+
+  if (!entry) {
+    if (fileMap.has("package.json")) {
+      entry =
+        packageJsonExtractMainEntry(fileMap.get("package.json") || "") ||
+        undefined;
+    }
+    if (!entry && fileMap.has("index.html")) {
+      // some heuristics on the presence of a <script/> with a src attribute matching a file
+      entry = extractFileEntryFromHtml(fileMap.get("index.html") || "", files);
+      console.log({ entryFromHtml: entry });
+      debugger;
+    }
+  }
+
+  console.log({ entry });
+  debugger;
 
   const entryPath = normalizePath(entry);
   if (!entryPath || !fileMap.has(entryPath)) {
-    throw new Error(`Entry file not found: ${entry}`);
+    throw new Error(
+      `You should provide a valid entry file via entryFile parameter or a package.json with a valid main field, example : src/index.tsx`
+    );
   }
 
   const virtualFsPlugin = createVirtualFsPlugin(fileMap, entryPath);
@@ -178,7 +200,7 @@ export const buildBundle = async (
 export const runBundle = async (
   bundleCode: string,
   cssChunks: readonly string[],
-  files?: ReadonlyArray<RunnerSourceFile>
+  files: ReadonlyArray<RunnerSourceFile>
 ): Promise<void> => {
   clearErrorOverlay();
   applyCss(cssChunks);
@@ -188,7 +210,15 @@ export const runBundle = async (
     currentModuleUrl = null;
   }
 
-  resetRoot();
+  // @TODO what to do about it ? necessseary ?
+  // resetRoot();
+
+  const indexHtmlFile = files.find((file) => file.path === "index.html");
+  console.log({ indexHtmlFile });
+  if (indexHtmlFile) {
+    ensureIndexHtml(document, indexHtmlFile.content ?? "");
+  }
+
   const blob = new Blob([bundleCode], { type: "application/javascript" });
   const url = URL.createObjectURL(blob);
   currentModuleUrl = url;

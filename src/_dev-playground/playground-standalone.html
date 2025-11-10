@@ -15,11 +15,26 @@
         entryFile: "src/index.tsx",
         files: [
           {
+            path: "index.html",
+            content: `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App</title>
+  </head>
+  <body>
+    <div id="root2"></div>
+  </body>
+</html>`,
+          },
+          {
             path: "package.json",
             content: `{
   "name": "react-app",
   "version": "1.0.0",
   "type": "module",
+  "main": "src/index.tsx",
   "scripts": {
   },
   "dependencies": {
@@ -58,10 +73,10 @@ const App = () => {
   );
 };
 
-const container = document.getElementById("root");
+const container = document.getElementById("root2");
 
 if (!container) {
-  throw new Error("Root element #root not found");
+  throw new Error("Root element #root2 not found");
 }
 
 createRoot(container).render(

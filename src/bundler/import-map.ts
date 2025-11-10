@@ -1,4 +1,4 @@
-import { extractDependencies } from "./extract-package-json.js";
+import { packageJsonExtractDependencies } from "./extract-package-json.js";
 import { RunnerSourceFile } from "./source-file.js";
 
 const generateImportMapFromDependencies = (
@@ -54,7 +54,9 @@ export const ensureImportMap = (() => {
           file.path === "package.json" ||
           file.path.endsWith("/package.json")
         ) {
-          const dependencies = extractDependencies(file.content || "");
+          const dependencies = packageJsonExtractDependencies(
+            file.content || ""
+          );
           if (dependencies) {
             imports = generateImportMapFromDependencies(dependencies);
             break;

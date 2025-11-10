@@ -58,13 +58,12 @@ export function createUi(
   // Apply styles
   applyUiStyles();
 
-  // Create main UI container
+  // main UI container
   const mainContainer = document.createElement("div");
   mainContainer.className = "surfpack-ui";
   mainContainer.style.width = `${width}px`;
   mainContainer.style.height = `${height}px`;
 
-  // Apply theme
   applyTheme(mainContainer, theme);
 
   // File browser
@@ -87,7 +86,7 @@ export function createUi(
     codeEditor = new CodeEditor(codeEditorContainer, onFileChange);
   }
 
-  // Preview area
+  // Preview area, on the right (contains navigator and iframe)
   const previewArea = document.createElement("div");
   previewArea.className = "surfpack-iframe-bundler-container";
 

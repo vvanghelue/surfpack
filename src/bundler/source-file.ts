@@ -1,6 +1,6 @@
 export interface RunnerSourceFile {
   path: string;
-  content?: string;
+  content: string;
 }
 
 const isRunnerSourceFile = (value: unknown): value is RunnerSourceFile => {
@@ -16,7 +16,7 @@ export const sanitizeFiles = (value: unknown): RunnerSourceFile[] => {
     return [];
   }
   return value.filter(isRunnerSourceFile).map((file) => ({
-    path: file.path,
-    content: typeof file.content === "string" ? file.content : undefined,
+    path: file.path || "",
+    content: typeof file.content === "string" ? file.content : "",
   }));
 };

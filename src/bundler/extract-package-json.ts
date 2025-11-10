@@ -1,4 +1,6 @@
-export function extractMainEntry(packageJsonString: string): string | null {
+export function packageJsonExtractMainEntry(
+  packageJsonString: string
+): string | null {
   try {
     const packageJson = JSON.parse(packageJsonString);
 
@@ -20,7 +22,7 @@ export function extractMainEntry(packageJsonString: string): string | null {
   }
 }
 
-export function extractDependencies(
+export function packageJsonExtractDependencies(
   packageJsonString: string
 ): Record<string, string> | null {
   try {

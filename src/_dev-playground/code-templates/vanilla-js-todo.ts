@@ -1,7 +1,7 @@
 export const vanillaJsTodoApp = {
   templateName: "Vanilla JS Todo App",
   description: "A clean todo application built with pure JavaScript",
-  entryFile: "index.html",
+  //entryFile: "index.html",
   files: [
     {
       path: "package.json",

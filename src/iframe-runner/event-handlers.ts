@@ -4,19 +4,13 @@ import {
   clearErrorOverlay,
 } from "../bundler/error-handler/error-overlay.js";
 import { sanitizeFiles } from "../bundler/source-file.js";
-import { postToParent } from "./iframe-messaging.js";
+import {
+  MessageFilesUpdate,
+  MessageToIframe,
+  postToParent,
+} from "./iframe-messaging.js";
 
-type FilesUpdateRawPayload = {
-  files?: unknown;
-  entry?: unknown;
-};
-
-type FilesUpdateMessage = {
-  type: "files-update";
-  payload?: FilesUpdateRawPayload;
-};
-
-const isFilesUpdateMessage = (data: unknown): data is FilesUpdateMessage => {
+const isFilesUpdateMessage = (data: unknown) => {
   if (typeof data !== "object" || data === null) {
     return false;
   }
@@ -26,29 +20,29 @@ const isFilesUpdateMessage = (data: unknown): data is FilesUpdateMessage => {
 let buildCounter = 0;
 
 const handleFilesUpdate = async (
-  rawPayload: FilesUpdateRawPayload | undefined
+  rawPayload: MessageFilesUpdate["payload"]
 ): Promise<void> => {
   const files = sanitizeFiles(rawPayload?.files);
 
-  if (typeof rawPayload?.entry !== "string") {
-    throw new Error(
-      'You should provide a string as "entry" in the files update message.'
-    );
-  }
+  // if (typeof rawPayload?.entry !== "string") {
+  //   throw new Error(
+  //     'You should provide a string as "entry" in the files update message.'
+  //   );
+  // }
 
-  const entry = rawPayload.entry;
+  const entry = rawPayload?.entry;
   const token = ++buildCounter;
 
-  if (!entry) {
-    const error = "No entry file provided.";
-    console.error(`Build failed:\n${error}`);
-    renderOverlay("Build Error", error, "");
-    postToParent({
-      type: "build-result-ack",
-      payload: { fileCount: files.length, success: false, error },
-    });
-    return;
-  }
+  // if (!entry) {
+  //   const error = "No entry file provided.";
+  //   console.error(`Build failed:\n${error}`);
+  //   renderOverlay("Build Error", error, "");
+  //   postToParent({
+  //     type: "build-result-ack",
+  //     payload: { fileCount: files.length, success: false, error },
+  //   });
+  //   return;
+  // }
 
   try {
     console.log("Building preview...");
@@ -89,13 +83,15 @@ const handleFilesUpdate = async (
 };
 
 export const registerParentMessageListener = (): void => {
-  window.addEventListener("message", (event: MessageEvent<unknown>) => {
+  window.addEventListener("message", (event: MessageEvent<MessageToIframe>) => {
     if (event.source !== window.parent) {
       return;
     }
     if (!isFilesUpdateMessage(event.data)) {
       return;
     }
-    void handleFilesUpdate(event.data.payload);
+    if (event.data.type === "files-update") {
+      handleFilesUpdate(event.data.payload);
+    }
   });
 };

@@ -213,7 +213,7 @@ export function init(options: InitOptions) {
           ui.fileBrowser.selectFile(currentFiles[0].path);
         }
       }
-      sendFiles(currentFiles, entry || options.entryFile);
+      sendFiles(currentFiles, entry);
     },
 
     updateFile(file: RunnerFile) {

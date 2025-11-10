@@ -13,11 +13,11 @@ export async function standaloneRunner(options: StandaloneRunnerOptions) {
 
   const files = sanitizeFiles(options?.files);
 
-  if (!options.entryFile || typeof options.entryFile !== "string") {
-    throw new Error(
-      'You should provide a string as "entryFile" in the standalone runner options.'
-    );
-  }
+  // if (!options.entryFile || typeof options.entryFile !== "string") {
+  //   throw new Error(
+  //     'You should provide a string as "entryFile" in the standalone runner options.'
+  //   );
+  // }
 
   if (showErrorOverlay === true) {
     installGlobalErrorHandler();
