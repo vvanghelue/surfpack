@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-  "target": "ES2022",
+  "target": "esnext",
   "module": "ESNext",
   "moduleResolution": "Bundler",
     "outDir": "./dist",
@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2022"]
+    "lib": ["DOM", "DOM.Iterable", "esnext"]
   },
   "include": [
     "src/**/*.ts",

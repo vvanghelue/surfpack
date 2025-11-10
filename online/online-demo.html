@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Surfpack Online Demo</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .header p {
+        color: #666;
+        margin: 0;
+      }
+      .controls {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .control-group {
+        display: inline-block;
+        margin-right: 20px;
+      }
+      .control-group label {
+        font-weight: 600;
+        font-size: 14px;
+        margin-right: 10px;
+      }
+      .control-group select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        background-color: white;
+        font-size: 14px;
+      }
+      .surfpack-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🏄‍♂️ Surfpack Online Demo</h1>
+      <p>A browser-based bundler for modern JavaScript applications</p>
+    </div>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label for="template-select">Template:</label>
+        <select id="template-select">
+          <option value="react-basic">React Basic App</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="theme-select">Theme:</label>
+        <select id="theme-select">
+          <option value="device-settings">Auto (Device)</option>
+          <option value="light">Light</option>
+          <option value="dark" selected>Dark</option>
+        </select>
+      </div>
+    </div>
+    
+    <div id="surfpack-container" class="surfpack-container"></div>
+    
+    <script type="module">
+      import { init } from "https://unpkg.com/surfpack";
+      
+      // Basic React template files
+      const getReactBasicFiles = () => ({
+        templateName: "React Basic App",
+        files: [
+          {
+            path: "package.json",
+            content: `{
+  "name": "react-demo",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  }
+}`
+          },
+          {
+            path: "src/style.css",
+            content: `body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.counter {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.count-display {
+  font-size: 48px;
+  font-weight: bold;
+  color: #667eea;
+  margin: 20px 0;
+}
+
+button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 0 10px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background: #5a6fd8;
+}
+
+.features {
+  margin-top: 40px;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.feature-item {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.feature-item h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.feature-item p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}`
+          },
+          {
+            path: "src/index.tsx",
+            content: `import React from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./style.css";
+
+const container = document.getElementById("root");
+
+if (!container) {
+  throw new Error("Root element #root not found");
+}
+
+createRoot(container).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);`
+          },
+          {
+            path: "src/App.tsx",
+            content: `import React from "react";
+import Counter from "./components/Counter.tsx";
+import Features from "./components/Features.tsx";
+
+export default function App() {
+  return (
+    <div className="app">
+      <h1>🏄‍♂️ Welcome to Surfpack!</h1>
+      <p style={{ textAlign: 'center', fontSize: '18px', color: '#666' }}>
+        A powerful browser-based bundler for modern web development
+      </p>
+      
+      <Counter />
+      <Features />
+    </div>
+  );
+}`
+          },
+          {
+            path: "src/components/Counter.tsx",
+            content: `import React from "react";
+
+const Counter = () => {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div className="counter">
+      <h2>Interactive Counter Demo</h2>
+      <div className="count-display">{count}</div>
+      <div>
+        <button onClick={() => setCount(count - 1)}>
+          Decrement
+        </button>
+        <button onClick={() => setCount(count + 1)}>
+          Increment
+        </button>
+        <button onClick={() => setCount(0)}>
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Counter;`
+          },
+          {
+            path: "src/components/Features.tsx",
+            content: `import React from "react";
+
+const Features = () => {
+  const features = [
+    {
+      title: "🚀 Fast Bundling",
+      description: "Lightning-fast bundling powered by esbuild in the browser"
+    },
+    {
+      title: "📦 Zero Setup",
+      description: "No build tools required - everything runs in your browser"
+    },
+    {
+      title: "🔧 Hot Reload",
+      description: "Instant updates as you code with live reload functionality"
+    },
+    {
+      title: "🎯 TypeScript Support",
+      description: "Full TypeScript support with real-time type checking"
+    },
+    {
+      title: "📱 Responsive UI",
+      description: "Beautiful, responsive interface that works on any device"
+    },
+    {
+      title: "🌐 Import from NPM",
+      description: "Import any NPM package directly from CDNs like esm.sh"
+    }
+  ];
+
+  return (
+    <div className="features">
+      <h2>Features</h2>
+      <div className="feature-list">
+        {features.map((feature, index) => (
+          <div key={index} className="feature-item">
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Features;`
+          }
+        ],
+        entryFile: "src/index.tsx"
+      });
+      
+      // Initialize Surfpack
+      let surfpack;
+      
+      const initSurfpack = () => {
+        const container = document.getElementById('surfpack-container');
+        const { files, entryFile } = getReactBasicFiles();
+        
+        surfpack = init({
+          bundlerUrl: "./online-bundler.html",
+          container: container,
+          files: files,
+          entryFile: entryFile,
+          debugMode: true,
+          ui: {
+            theme: "dark",
+            width: "100%",
+            height: 600,
+            showCodeEditor: true,
+            showFileBrowser: true,
+            showNavigator: true,
+          },
+          onBundleComplete: (result) => {
+            console.log("Bundle completed:", result);
+          },
+          onBundleError: (error) => {
+            console.error("Bundle error:", error);
+          },
+          onIframeReady: () => {
+            console.log("Iframe is ready");
+          },
+        });
+      };
+      
+      // Theme switcher
+      const themeSelect = document.getElementById('theme-select');
+      themeSelect.addEventListener('change', (e) => {
+        const theme = e.target.value;
+        if (surfpack && surfpack.ui) {
+          surfpack.ui.setTheme(theme);
+        }
+      });
+      
+      // Initialize on load
+      initSurfpack();
+      
+      console.log("Surfpack Online Demo initialized!");
+    </script>
+  </body>
+</html>
