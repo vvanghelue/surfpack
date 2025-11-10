@@ -64,7 +64,7 @@ const styles = `
         box-sizing: border-box;
         display: flex;
         border: 1px solid var(--surfpack-border);
-        border-radius: 8px;
+        __border-radius: 4px;
         __box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         display: flex;
