@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Runner</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #container { border: 1px solid #ccc; height: 400px; width: 100%; }
+        .controls { margin-bottom: 20px; }
+        button { margin-right: 10px; padding: 8px 16px; }
+        .status { margin-top: 20px; padding: 10px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Surfpack Runner Test</h1>
+    
+    <div class="controls">
+        <button onclick="loadSimpleReact()">Load Simple React</button>
+        <button onclick="loadWithError()">Load with Error</button>
+        <button onclick="updateFile()">Update File</button>
+        <button onclick="destroy()">Destroy</button>
+    </div>
+    
+    <div id="container"></div>
+    
+    <div class="status" id="status">Ready...</div>
+
+    <script type="module">
+        import { init } from './dist/runner.js';
+        
+        let runner = null;
+        const container = document.getElementById('container');
+        const status = document.getElementById('status');
+
+        function updateStatus(msg) {
+            status.textContent = msg;
+            console.log(msg);
+        }
+
+        window.loadSimpleReact = () => {
+            if (runner) runner.destroy();
+            
+            const files = [{
+                path: 'App.tsx',
+                content: `import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+function App() {
+  return (
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1 style={{ color: 'blue' }}>Hello from Surfpack!</h1>
+      <p>This React app is running in an iframe with bundling via esbuild.</p>
+      <button onClick={() => alert('Button clicked!')}>
+        Click me!
+      </button>
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);`
+            }];
+
+            runner = init({
+                container: container,
+                files: files,
+                entry: 'App.tsx',
+                debugMode: true,
+                bundlerUrl: './src/_dev-tester/dev-bundler.html',
+                onIframeReady: () => updateStatus('Iframe ready, sending files...'),
+                onBundleComplete: (result) => updateStatus(`Bundle complete! Files: ${result.fileCount}, Warnings: ${result.warnings?.length || 0}`),
+                onBundleError: (error) => updateStatus(`Bundle error: ${error}`)
+            });
+        };
+
+        window.loadWithError = () => {
+            if (runner) runner.destroy();
+            
+            const files = [{
+                path: 'BadApp.tsx',
+                content: `import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+// This will cause a syntax error
+function App() {
+  return (
+    <div>
+      <h1>This has a syntax error{</h1>
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);`
+            }];
+
+            runner = init({
+                container: container,
+                files: files,
+                entry: 'BadApp.tsx',
+                debugMode: true,
+                bundlerUrl: './src/_dev-tester/dev-bundler.html',
+                onIframeReady: () => updateStatus('Iframe ready, sending files with error...'),
+                onBundleComplete: (result) => updateStatus(`Bundle complete! Files: ${result.fileCount}`),
+                onBundleError: (error) => updateStatus(`Bundle error: ${error}`)
+            });
+        };
+
+        window.updateFile = () => {
+            if (!runner) {
+                updateStatus('No runner instance. Load a file first.');
+                return;
+            }
+            
+            runner.updateFile({
+                path: 'App.tsx',
+                content: `import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+function App() {
+  return (
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', background: 'lightgreen' }}>
+      <h1 style={{ color: 'darkgreen' }}>Updated React App!</h1>
+      <p>This file was updated using the updateFile method.</p>
+      <p>Time: {new Date().toLocaleTimeString()}</p>
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);`
+            });
+            updateStatus('Updated file content...');
+        };
+
+        window.destroy = () => {
+            if (runner) {
+                runner.destroy();
+                runner = null;
+                updateStatus('Runner destroyed.');
+            } else {
+                updateStatus('No runner to destroy.');
+            }
+        };
+    </script>
+</body>
+</html>
