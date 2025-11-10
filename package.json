@@ -1,6 +1,6 @@
 {
   "name": "surfpack",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Run your JavaScript/TypeScript code directly in the browser with zero bundling.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
