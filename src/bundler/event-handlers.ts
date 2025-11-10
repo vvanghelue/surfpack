@@ -44,8 +44,6 @@ const handleFilesUpdate = async (
 ): Promise<void> => {
   const files = sanitizeFiles(rawPayload?.files);
 
-  console.log({ rawPayload });
-
   if (typeof rawPayload?.entry !== "string") {
     throw new Error(
       'You should provide a string as "entry" in the files update message.'
@@ -60,15 +58,15 @@ const handleFilesUpdate = async (
     console.error(`Build failed:\n${error}`);
     renderOverlay("Build Error", error, "");
     postToParent({
-      type: "files-ack",
+      type: "build-result-ack",
       payload: { fileCount: files.length, success: false, error },
     });
     return;
   }
 
   try {
-    console.error("Building preview...");
-    const { code, css, warnings } = await buildBundle(files, entry);
+    console.log("Building preview...");
+    const { code, css } = await buildBundle(files, entry);
     if (token !== buildCounter) {
       return;
     }
@@ -83,13 +81,9 @@ const handleFilesUpdate = async (
     }
 
     clearErrorOverlay();
-    const warningText = warnings.length
-      ? `\nWarnings:\n${warnings.join("\n")}`
-      : "";
-    console.error(`Rendered ${entry || "entry"} successfully.${warningText}`);
     postToParent({
-      type: "files-ack",
-      payload: { fileCount: files.length, success: true, warnings },
+      type: "build-result-ack",
+      payload: { fileCount: files.length, success: true },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -101,7 +95,7 @@ const handleFilesUpdate = async (
 
     if (token === buildCounter) {
       postToParent({
-        type: "files-ack",
+        type: "build-result-ack",
         payload: { fileCount: files.length, success: false, error: message },
       });
     }

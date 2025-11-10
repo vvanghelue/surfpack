@@ -33,7 +33,7 @@ export type InitOptions = {
 type BundlerMessage =
   | { type: "iframe-ready" }
   | {
-      type: "files-ack";
+      type: "build-result-ack";
       payload: {
         fileCount: number;
         success: boolean;
@@ -171,7 +171,7 @@ export function init(options: InitOptions) {
         }
         break;
 
-      case "files-ack":
+      case "build-result-ack":
         if (data.payload.success) {
           if (options.onBundleComplete) {
             options.onBundleComplete({

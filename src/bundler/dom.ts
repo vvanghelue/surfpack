@@ -1,7 +1,7 @@
 export type ParentMessage =
   | { type: "iframe-ready" }
   | {
-      type: "files-ack";
+      type: "build-result-ack";
       payload: {
         fileCount: number;
         success: boolean;

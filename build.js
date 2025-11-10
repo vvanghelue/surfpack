@@ -44,7 +44,7 @@ async function buildBundle() {
         "npx",
         [
           "rolldown",
-          "src/dev-playground/playground.ts",
+          "src/_dev-playground/playground.ts",
           "-o",
           "dist/playground.js",
           "-f",
@@ -75,7 +75,7 @@ async function buildBundle() {
       // Build playground bundle in development mode
       if (!isProduction) {
         const playgroundConfig = {
-          input: "src/dev-playground/playground.ts",
+          input: "src/_dev-playground/playground.ts",
           output: {
             file: "dist/playground.js",
             format: "es",
