@@ -1,7 +1,7 @@
 import { EditorView, basicSetup } from "codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import FileBrowser from "./file-browser/file-browser.js";
-import { getReactTemplateFiles } from "./react-templates/react-template.js";
+import { getReactTemplateFiles } from "./code-templates/react-template.js";
 
 const { files, ENTRY_FILE } = getReactTemplateFiles();
 
@@ -26,7 +26,8 @@ codeEditor.style.width = "600px";
 rootEl.appendChild(document.createElement("div")).id = "iframe-container";
 
 const iframe = document.createElement("iframe");
-iframe.src = "../iframe/iframe.html";
+iframe.src = "./dev-bundler.html";
+// iframe.src = "https://vvanghelue.github.io/surfpack/online/online-runner.html"
 iframe.style.width = "700px";
 iframe.style.minHeight = "100vh";
 document.querySelector("#iframe-container")?.appendChild(iframe);
