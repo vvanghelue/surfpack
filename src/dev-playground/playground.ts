@@ -111,10 +111,10 @@ let surfpack = init({
     showFileBrowser: true,
     showNavigator: true,
   },
-  onBundleComplete: (result) => {
+  onBundleComplete: (result: { fileCount: number; warnings?: string[] }) => {
     console.log("Bundle completed:", result);
   },
-  onBundleError: (error) => {
+  onBundleError: (error: string) => {
     console.error("Bundle error:", error);
   },
   onIframeReady: () => {
