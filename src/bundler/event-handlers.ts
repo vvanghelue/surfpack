@@ -1,5 +1,6 @@
-import { postToParent, setMessage } from "./dom.js";
+import { postToParent } from "./dom.js";
 import { buildBundle, runBundle, type RunnerSourceFile } from "./bundle.js";
+import { renderOverlay, clearErrorOverlay } from "./error-overlay.js";
 
 type FilesUpdateRawPayload = {
   files?: unknown;
@@ -48,7 +49,8 @@ const handleFilesUpdate = async (
 
   if (!entry) {
     const error = "No entry file provided.";
-    setMessage(`Build failed:\n${error}`);
+    console.error(`Build failed:\n${error}`);
+    renderOverlay("Build Error", error, "");
     postToParent({
       type: "files-ack",
       payload: { fileCount: files.length, success: false, error },
@@ -57,7 +59,7 @@ const handleFilesUpdate = async (
   }
 
   try {
-    setMessage("Building preview...");
+    console.error("Building preview...");
     const { code, css, warnings } = await buildBundle(files, entry);
     if (token !== buildCounter) {
       return;
@@ -72,18 +74,23 @@ const handleFilesUpdate = async (
       return;
     }
 
+    clearErrorOverlay();
     const warningText = warnings.length
       ? `\nWarnings:\n${warnings.join("\n")}`
       : "";
-    setMessage(`Rendered ${entry || "entry"} successfully.${warningText}`);
+    console.error(`Rendered ${entry || "entry"} successfully.${warningText}`);
     postToParent({
       type: "files-ack",
       payload: { fileCount: files.length, success: true, warnings },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    setMessage(`Build failed:\n${message}`);
+    const stack = error instanceof Error ? error.stack || "" : "";
+    console.error(`Build failed:\n${message}`);
     console.error(error);
+
+    renderOverlay("Compilation Error", message, stack);
+
     if (token === buildCounter) {
       postToParent({
         type: "files-ack",

@@ -1,5 +1,5 @@
 import { applyCss, resetRoot } from "./dom.js";
-import { clearErrorOverlay } from "./error-handler.js";
+import { clearErrorOverlay, showErrorOverlay } from "./error-handler.js";
 import { ensureEsbuild, type Esbuild } from "./esbuild.js";
 import { ensureImportMap } from "./import-map.js";
 import {
@@ -157,5 +157,11 @@ export const runBundle = async (
   const url = URL.createObjectURL(blob);
   currentModuleUrl = url;
   ensureImportMap(files);
-  await import(url);
+
+  try {
+    await import(url);
+  } catch (error) {
+    showErrorOverlay(error);
+    throw error; // Re-throw to maintain existing error handling behavior
+  }
 };

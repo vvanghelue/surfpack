@@ -10,19 +10,11 @@ export type ParentMessage =
       };
     };
 
-const messagesEl = document.getElementById("messages");
 let rootEl = document.getElementById("root");
 let currentStyleElements: HTMLStyleElement[] = [];
 
 export const postToParent = (message: ParentMessage): void => {
   window.parent.postMessage(message, "*");
-};
-
-export const setMessage = (text: string): void => {
-  if (!(messagesEl instanceof HTMLElement)) {
-    return;
-  }
-  messagesEl.textContent = text;
 };
 
 export const resetRoot = (): void => {

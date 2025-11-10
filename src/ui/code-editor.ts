@@ -10,6 +10,7 @@ export class CodeEditor {
   private onFileChange?: (file: RunnerFile) => void;
   private currentTheme: "light" | "dark" | "device-settings" =
     "device-settings";
+  private isLoadingFile = false;
 
   constructor(
     container: HTMLElement,
@@ -36,7 +37,12 @@ export class CodeEditor {
         javascript({ jsx: true, typescript: true }),
         theme === "dark" ? vscodeDark : vscodeLight,
         EditorView.updateListener.of((update) => {
-          if (update.docChanged && this.currentFile && this.onFileChange) {
+          if (
+            update.docChanged &&
+            this.currentFile &&
+            this.onFileChange &&
+            !this.isLoadingFile
+          ) {
             this.currentFile.content = update.state.doc.toString();
             this.onFileChange(this.currentFile);
           }
@@ -73,6 +79,7 @@ export class CodeEditor {
 
   loadFile(file: RunnerFile): void {
     this.currentFile = file;
+    this.isLoadingFile = true;
 
     if (this.view) {
       this.view.dispatch({
@@ -83,6 +90,8 @@ export class CodeEditor {
         },
       });
     }
+
+    this.isLoadingFile = false;
   }
 
   getCurrentFile(): RunnerFile | null {
@@ -90,6 +99,8 @@ export class CodeEditor {
   }
 
   updateContent(content: string): void {
+    this.isLoadingFile = true;
+
     if (this.view) {
       this.view.dispatch({
         changes: {
@@ -99,6 +110,8 @@ export class CodeEditor {
         },
       });
     }
+
+    this.isLoadingFile = false;
   }
 
   setTheme(theme: "light" | "dark" | "device-settings"): void {
@@ -107,6 +120,7 @@ export class CodeEditor {
     const currentContent = this.view?.state.doc.toString() || "";
     this.initializeEditor();
     if (currentContent && this.view) {
+      this.isLoadingFile = true; // Prevent triggering onFileChange when just selecting a file
       this.view.dispatch({
         changes: {
           from: 0,
@@ -114,6 +128,7 @@ export class CodeEditor {
           insert: currentContent,
         },
       });
+      this.isLoadingFile = false;
     }
   }
 

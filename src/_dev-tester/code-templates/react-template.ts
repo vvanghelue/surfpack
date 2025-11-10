@@ -38,6 +38,10 @@ import "./style.css";
 
 const container = document.getElementById("root");
 
+
+// throw new Error("Fake early error");
+
+
 if (!container) {
   throw new Error("Root element #root not found");
 }

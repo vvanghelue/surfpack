@@ -7,6 +7,7 @@
  *   Top to bottom :
  *      - Navigator (bar with URL and controls)
  *      - Iframe (bundled app)
+ *      - Bottom overlay (150px height) with debug log messages (optional)
  */
 const styles = `
     /* CSS Variables for Dark Mode */
@@ -189,6 +190,8 @@ const styles = `
     .surfpack-navigator-refresh:hover {
         background-color: var(--surfpack-hover-background);
     }
+
+    .surfpack-debug-log {}
 `;
 
 let stylesApplied = false;

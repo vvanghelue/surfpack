@@ -11,6 +11,7 @@ export type UiOptions = {
   showCodeEditor?: boolean;
   showFileBrowser?: boolean;
   showNavigator?: boolean;
+  showDebugLogMessages?: boolean;
 };
 
 export interface UiComponent {
@@ -45,12 +46,13 @@ export function createUi(
   onFileChange?: (file: RunnerFile) => void
 ): UiComponent {
   const {
+    theme = "device-settings",
     width = "100%",
     height = "100%",
     showCodeEditor = true,
     showFileBrowser = true,
     showNavigator = true,
-    theme = "device-settings",
+    showDebugLogMessages = false,
   } = options;
 
   // Apply styles
