@@ -20,7 +20,7 @@ const isRunnerSourceFile = (value: unknown): value is RunnerSourceFile => {
   return typeof candidate.path === "string";
 };
 
-const sanitizeFiles = (value: unknown): RunnerSourceFile[] => {
+export const sanitizeFiles = (value: unknown): RunnerSourceFile[] => {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -43,8 +43,16 @@ const handleFilesUpdate = async (
   rawPayload: FilesUpdateRawPayload | undefined
 ): Promise<void> => {
   const files = sanitizeFiles(rawPayload?.files);
-  const entry =
-    typeof rawPayload?.entry === "string" ? rawPayload.entry : files[0]?.path;
+
+  console.log({ rawPayload });
+
+  if (typeof rawPayload?.entry !== "string") {
+    throw new Error(
+      'You should provide a string as "entry" in the files update message.'
+    );
+  }
+
+  const entry = rawPayload.entry;
   const token = ++buildCounter;
 
   if (!entry) {

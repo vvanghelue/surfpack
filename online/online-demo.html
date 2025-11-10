@@ -6,7 +6,8 @@
     <title>Surfpack Online Demo</title>
     <style>
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         margin: 0;
         padding: 20px;
         background-color: #f8f9fa;
@@ -29,7 +30,7 @@
         background-color: white;
         border-radius: 8px;
         border: 1px solid #e9ecef;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .control-group {
         display: inline-block;
@@ -60,7 +61,7 @@
       <h1>🏄‍♂️ Surfpack Online Demo</h1>
       <p>A browser-based bundler for modern JavaScript applications</p>
     </div>
-    
+
     <div class="controls">
       <div class="control-group">
         <label for="template-select">Template:</label>
@@ -81,16 +82,16 @@
         </select>
       </div>
     </div>
-    
+
     <div id="surfpack-container" class="surfpack-container"></div>
-    
+
     <script type="module">
       import { init } from "https://esm.sh/surfpack@1.0.6";
-      
+
       let demoTemplates;
       let surfpack;
-      let currentTemplate = 'react-basic';
-      
+      let currentTemplate = "react-basic";
+
       // Load templates with error handling
       try {
         const templatesModule = await import("./demo-templates/index.js");
@@ -98,24 +99,24 @@
         console.log("Templates loaded:", Object.keys(demoTemplates));
       } catch (error) {
         console.error("Failed to load templates:", error);
-        document.getElementById('surfpack-container').innerHTML = 
+        document.getElementById("surfpack-container").innerHTML =
           `<div style="padding: 20px; color: red;">Failed to load demo templates: ${error.message}</div>`;
       }
-      
+
       // Only proceed if templates loaded successfully
       if (demoTemplates) {
         const initSurfpack = () => {
-          const container = document.getElementById('surfpack-container');
+          const container = document.getElementById("surfpack-container");
           const template = demoTemplates[currentTemplate];
-          
+
           console.log(`Initializing template: ${currentTemplate}`, template);
-          
+
           if (!template) {
             console.error(`Template ${currentTemplate} not found`);
             container.innerHTML = `<div style="padding: 20px; color: red;">Error: Template "${currentTemplate}" not found</div>`;
             return;
           }
-          
+
           try {
             surfpack = init({
               bundlerUrl: "./online-bundler.html",
@@ -124,7 +125,7 @@
               entryFile: template.entryFile,
               debugMode: true,
               ui: {
-                theme: document.getElementById('theme-select').value || "dark",
+                theme: document.getElementById("theme-select").value || "dark",
                 width: "100%",
                 height: 600,
                 showCodeEditor: true,
@@ -146,41 +147,41 @@
             container.innerHTML = `<div style="padding: 20px; color: red;">Error initializing Surfpack: ${error.message}</div>`;
           }
         };
-        
+
         // Template switcher
-        const templateSelect = document.getElementById('template-select');
-        templateSelect.addEventListener('change', (e) => {
+        const templateSelect = document.getElementById("template-select");
+        templateSelect.addEventListener("change", (e) => {
           currentTemplate = e.target.value;
-          const container = document.getElementById('surfpack-container');
-          
+          const container = document.getElementById("surfpack-container");
+
           console.log(`Switching to template: ${currentTemplate}`);
-          
+
           // Destroy previous instance if it exists
           if (surfpack && surfpack.destroy) {
             surfpack.destroy();
           }
-          
+
           // Clear the container
-          container.innerHTML = '';
-          
+          container.innerHTML = "";
+
           // Small delay to ensure cleanup is complete
           setTimeout(() => {
             initSurfpack();
           }, 100);
         });
-        
+
         // Theme switcher
-        const themeSelect = document.getElementById('theme-select');
-        themeSelect.addEventListener('change', (e) => {
+        const themeSelect = document.getElementById("theme-select");
+        themeSelect.addEventListener("change", (e) => {
           const theme = e.target.value;
           if (surfpack && surfpack.ui) {
             surfpack.ui.setTheme(theme);
           }
         });
-        
+
         // Initialize on load
         initSurfpack();
-        
+
         console.log("Surfpack Online Demo initialized!");
       }
     </script>

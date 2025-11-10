@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standalone Runner</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      import { standaloneRunner } from "../../dist/index.js";
+
+      const options = {
+        entryFile: "src/index.tsx",
+        files: [
+          {
+            path: "package.json",
+            content: `{
+  "name": "react-app",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+  },
+  "dependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+  }
+}`,
+          },
+          {
+            path: "src/style.css",
+            content: `body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #DDDEFE;
+}
+  `,
+          },
+          {
+            path: "src/index.tsx",
+            content: `import React from "react";
+import { createRoot } from "react-dom/client";
+import "./style.css";
+
+const App = () => {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>Standalone React App</h1>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};
+
+const container = document.getElementById("root");
+
+if (!container) {
+  throw new Error("Root element #root not found");
+}
+
+createRoot(container).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+`,
+          },
+        ],
+      };
+
+      standaloneRunner(options);
+    </script>
+  </body>
+</html>

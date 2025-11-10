@@ -1,6 +1,7 @@
 import { UiOptions, createUi } from "./ui/ui.js";
 
-export * from "./bundler/bundler.js";
+export * from "./bundler/iframe-runner.js";
+export * from "./bundler/standalone-runner.js";
 export * from "./ui/ui.js";
 
 export interface RunnerFile {
