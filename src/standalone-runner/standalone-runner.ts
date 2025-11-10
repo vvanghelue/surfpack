@@ -1,6 +1,6 @@
 import { buildBundle, runBundle } from "../bundler/bundle";
 import { RunnerSourceFile, sanitizeFiles } from "../bundler/source-file";
-import { installGlobalErrorHandler } from "../bundler/error-handler.js";
+import { installGlobalErrorHandler } from "../bundler/error-handler/error-handler.js";
 
 type StandaloneRunnerOptions = {
   files: RunnerSourceFile[];
@@ -29,5 +29,6 @@ export async function standaloneRunner(options: StandaloneRunnerOptions) {
     throw new Error("Bundle is empty. Check your entry file exports.");
   }
 
+  console.log({ code });
   await runBundle(code, css, files);
 }

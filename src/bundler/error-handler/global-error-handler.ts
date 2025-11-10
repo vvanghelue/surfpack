@@ -1,4 +1,4 @@
-import { CompilationError } from "./bundle.js";
+import { CompilationError } from "../bundle.js";
 import { renderOverlay } from "./error-overlay.js";
 
 const OVERLAY_TITLE = "Runtime Error";

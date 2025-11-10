@@ -1,5 +1,8 @@
 import { buildBundle, runBundle } from "../bundler/bundle.js";
-import { renderOverlay, clearErrorOverlay } from "../bundler/error-overlay.js";
+import {
+  renderOverlay,
+  clearErrorOverlay,
+} from "../bundler/error-handler/error-overlay.js";
 import { sanitizeFiles } from "../bundler/source-file.js";
 import { postToParent } from "./iframe-messaging.js";
 

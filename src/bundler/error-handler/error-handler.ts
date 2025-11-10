@@ -3,4 +3,4 @@ export { clearErrorOverlay } from "./error-overlay.js";
 export {
   installGlobalErrorHandler,
   showErrorOverlay,
-} from "./runtime-error.js";
+} from "./global-error-handler.js";

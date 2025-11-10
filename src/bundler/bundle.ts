@@ -1,4 +1,7 @@
-import { clearErrorOverlay, showErrorOverlay } from "./error-handler.js";
+import {
+  clearErrorOverlay,
+  showErrorOverlay,
+} from "./error-handler/error-handler.js";
 import { ensureEsbuild, type Esbuild } from "./esbuild.js";
 import { ensureImportMap } from "./import-map.js";
 import {
