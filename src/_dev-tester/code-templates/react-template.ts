@@ -1,8 +1,25 @@
 export function getReactTemplateFiles() {
   const files = [];
-  const ENTRY_FILE = "src/index.tsx";
+  const entryFile = "src/index.tsx";
 
   files.push(
+    {
+      path: "package.json",
+      content: `{
+  "name": "react-app",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0"
+  },
+  "devDependencies": {
+  }
+}`,
+    },
     {
       path: "src/style.css",
       content: `body {
@@ -111,5 +128,5 @@ export default Counter;
     path: "index.txt",
     content: `Minimal React + TypeScript demo\n\n- src/index.tsx bootstraps the React root and renders <App />.\n- src/App.tsx wires HelloWorld and Counter components.\n- src/components/HelloWorld.tsx greets the user.\n- src/components/Counter.tsx provides an interactive counter demo.\n`,
   });
-  return { files, ENTRY_FILE };
+  return { templateName: "Working React App", files, entryFile };
 }
