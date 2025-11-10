@@ -54,7 +54,7 @@ function App() {
   }
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div style={{ background: "#eee", minHeight: "100vh", padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h1>React Runtime Error Demo</h1>
       <p>Click the buttons below to trigger different types of runtime errors:</p>
       

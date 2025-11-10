@@ -5,8 +5,9 @@ import { applyUiStyles } from "./ui.style.css.js";
 import type { RunnerFile } from "../index.js";
 
 export type UiOptions = {
+  theme?: "light" | "dark" | "device-settings";
   width?: number | string;
-  height?: number;
+  height?: number | string;
   showCodeEditor?: boolean;
   showFileBrowser?: boolean;
   showNavigator?: boolean;
@@ -18,7 +19,24 @@ export interface UiComponent {
   codeEditor?: CodeEditor;
   navigator?: Navigator;
   previewContainer: HTMLElement;
+  setTheme(theme: "light" | "dark" | "device-settings"): void;
   destroy(): void;
+}
+
+function applyTheme(
+  container: HTMLElement,
+  theme: "light" | "dark" | "device-settings"
+): void {
+  // Remove existing theme classes
+  container.classList.remove("dark-mode", "light-mode");
+
+  if (theme === "dark") {
+    container.classList.add("dark-mode");
+  } else if (theme === "light") {
+    container.classList.add("light-mode");
+  }
+  // For "device-settings", we rely on CSS @media (prefers-color-scheme: dark)
+  // so no class is needed
 }
 
 export function createUi(
@@ -32,6 +50,7 @@ export function createUi(
     showCodeEditor = true,
     showFileBrowser = true,
     showNavigator = true,
+    theme = "device-settings",
   } = options;
 
   // Apply styles
@@ -42,6 +61,9 @@ export function createUi(
   mainContainer.className = "surfpack-ui";
   mainContainer.style.width = `${width}px`;
   mainContainer.style.height = `${height}px`;
+
+  // Apply theme
+  applyTheme(mainContainer, theme);
 
   // File browser
   let fileBrowser: FileBrowser | undefined;
@@ -92,12 +114,24 @@ export function createUi(
     };
   }
 
+  // Apply initial theme to code editor if it exists
+  if (codeEditor) {
+    codeEditor.setTheme(theme);
+  }
+
   return {
     container: mainContainer,
     fileBrowser,
     codeEditor,
     navigator,
     previewContainer: iframeContainer,
+    setTheme(newTheme: "light" | "dark" | "device-settings") {
+      applyTheme(mainContainer, newTheme);
+      // Also update code editor theme
+      if (codeEditor) {
+        codeEditor.setTheme(newTheme);
+      }
+    },
     destroy() {
       if (container.contains(mainContainer)) {
         container.removeChild(mainContainer);

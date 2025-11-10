@@ -141,7 +141,8 @@ export const buildBundle = async (
 
 export const runBundle = async (
   bundleCode: string,
-  cssChunks: readonly string[]
+  cssChunks: readonly string[],
+  files?: ReadonlyArray<RunnerSourceFile>
 ): Promise<void> => {
   clearErrorOverlay();
   applyCss(cssChunks);
@@ -155,6 +156,6 @@ export const runBundle = async (
   const blob = new Blob([bundleCode], { type: "application/javascript" });
   const url = URL.createObjectURL(blob);
   currentModuleUrl = url;
-  ensureImportMap();
+  ensureImportMap(files);
   await import(url);
 };

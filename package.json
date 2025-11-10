@@ -18,6 +18,7 @@
     "dist"
   ],
   "dependencies": {
+    "@uiw/codemirror-theme-vscode": "^4.25.3",
     "codemirror": "^6.0.2"
   },
   "devDependencies": {

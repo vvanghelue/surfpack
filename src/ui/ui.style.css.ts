@@ -9,16 +9,66 @@
  *      - Iframe (bundled app)
  */
 const styles = `
+    /* CSS Variables for Dark Mode */
+    :root {
+        /* Light mode (default) */
+        --surfpack-background: #ffffff;
+        --surfpack-foreground: #333333;
+        --surfpack-muted-background: #f8f9fa;
+        --surfpack-muted-foreground: #666666;
+        --surfpack-border: #e9ecef;
+        --surfpack-accent: #007acc;
+        --surfpack-hover-background: #e9ecef;
+    }
+    
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --surfpack-background: #1e1e1e;
+            --surfpack-foreground: #d4d4d4;
+            --surfpack-muted-background: #2d2d30;
+            --surfpack-muted-foreground: #969696;
+            --surfpack-border: #3e3e42;
+            --surfpack-accent: #0078d4;
+            --surfpack-hover-background: #3e3e42;
+        }
+    }
+    
+    /* Manual dark mode class override */
+    .surfpack-ui.dark-mode {
+        --surfpack-background: #1e1e1e;
+        --surfpack-foreground: #d4d4d4;
+        --surfpack-muted-background: #2d2d30;
+        --surfpack-muted-foreground: #969696;
+        --surfpack-border: #3e3e42;
+        --surfpack-accent: #0078d4;
+        --surfpack-hover-background: #3e3e42;
+    }
+    
+    /* Manual light mode class override */
+    .surfpack-ui.light-mode {
+        --surfpack-background: #ffffff;
+        --surfpack-foreground: #333333;
+        --surfpack-muted-background: #f8f9fa;
+        --surfpack-muted-foreground: #666666;
+        --surfpack-border: #e9ecef;
+        --surfpack-accent: #007acc;
+        --surfpack-hover-background: #e9ecef;
+    }
+
     .surfpack-ui {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
         font-size: 14px;
         line-height: 1.5;
         box-sizing: border-box;
         display: flex;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        border: 1px solid var(--surfpack-border);
+        border-radius: 8px;
+        __box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         display: flex;
+        background-color: var(--surfpack-background);
+        color: var(--surfpack-foreground);
     }
     .surfpack-ui * {
         box-sizing: border-box;
@@ -26,8 +76,8 @@ const styles = `
 
     /* File Browser Styles */
     .surfpack-file-browser {
-        background-color: #f8f9fa;
-        border-right: 1px solid #e9ecef;
+        background-color: var(--surfpack-background);
+        border-right: 1px solid var(--surfpack-border);
         width: 250px;
         height: 100%;
         overflow: auto;
@@ -36,10 +86,10 @@ const styles = `
         height: 100%;
         overflow-y: auto;
         padding: 8px;
-        background-color: #f8f9fa;
+        background-color: var(--surfpack-muted-background);
     }
     .surfpack-file-browser .empty-message {
-        color: #666;
+        color: var(--surfpack-muted-foreground);
         padding: 8px;
     }
     .surfpack-file-browser .file-tree {
@@ -59,12 +109,13 @@ const styles = `
         display: flex;
         align-items: center;
         border-radius: 4px;
+        color: var(--surfpack-foreground);
     }
     .surfpack-file-browser .item:hover {
-        background-color: #e9ecef;
+        background-color: var(--surfpack-hover-background);
     }
     .surfpack-file-browser .file-item.active {
-        background-color: #007acc !important;
+        background-color: var(--surfpack-accent) !important;
         color: white !important;
     }
     .surfpack-file-browser .toggle-icon {
@@ -78,25 +129,16 @@ const styles = `
 
     /* Code Editor Styles */
     .surfpack-code-editor {
-        background-color: #ffffff;
         position: relative;
         flex: 1;
         height: 100%;
-        border-right: 1px solid #ddd;
+        border-right: 1px solid var(--surfpack-border);
         overflow: hidden;
-    }
-    .surfpack-code-editor .cm-editor {
-        height: 100%;
-        border: none;
-        outline: none;
-    }
-    .surfpack-code-editor .cm-focused {
-        outline: none;
     }
 
     /* Preview Area Styles */
     .surfpack-iframe-bundler-container {
-        background-color: #ffffff;
+        background-color: var(--surfpack-background);
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -104,8 +146,8 @@ const styles = `
         height: 100%;
     }
     .surfpack-iframe-bundler-navigator {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
+        background-color: var(--surfpack-muted-background);
+        border-bottom: 1px solid var(--surfpack-border);
         min-height: 40px;
         height: 40px;
         display: flex;
@@ -129,22 +171,23 @@ const styles = `
     .surfpack-navigator-url {
         flex: 1;
         padding: 4px 8px;
-        background-color: white;
-        border: 1px solid #ddd;
+        background-color: var(--surfpack-background);
+        border: 1px solid var(--surfpack-border);
         border-radius: 4px;
         font-size: 12px;
         font-family: monospace;
-        color: #666;
+        color: var(--surfpack-muted-foreground);
     }
     .surfpack-navigator-refresh {
         padding: 4px 8px;
-        border: 1px solid #ddd;
+        border: 1px solid var(--surfpack-border);
         border-radius: 4px;
-        background-color: white;
+        background-color: var(--surfpack-background);
+        color: var(--surfpack-foreground);
         cursor: pointer;
     }
     .surfpack-navigator-refresh:hover {
-        background-color: #f0f0f0;
+        background-color: var(--surfpack-hover-background);
     }
 `;
 

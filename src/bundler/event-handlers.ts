@@ -67,7 +67,7 @@ const handleFilesUpdate = async (
       throw new Error("Bundle is empty. Check your entry file exports.");
     }
 
-    await runBundle(code, css);
+    await runBundle(code, css, files);
     if (token !== buildCounter) {
       return;
     }

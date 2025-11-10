@@ -12,9 +12,8 @@ export function getReactTemplateFiles() {
   "scripts": {
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0"
+    "react": "^19",
+    "react-dom": "^19"
   },
   "devDependencies": {
   }
