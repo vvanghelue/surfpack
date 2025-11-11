@@ -42,6 +42,15 @@ templateSelectorContainer.style.padding = "15px";
 templateSelectorContainer.style.backgroundColor = "#f8f9fa";
 templateSelectorContainer.style.borderRadius = "8px";
 templateSelectorContainer.style.border = "1px solid #e9ecef";
+templateSelectorContainer.style.display = "flex";
+templateSelectorContainer.style.justifyContent = "space-between";
+templateSelectorContainer.style.alignItems = "center";
+
+// Left side container for template and theme selectors
+const leftControlsContainer = document.createElement("div");
+leftControlsContainer.style.display = "flex";
+leftControlsContainer.style.alignItems = "center";
+leftControlsContainer.style.gap = "20px";
 
 const templateLabel = document.createElement("label");
 templateLabel.textContent = "Select Template: ";
@@ -55,7 +64,6 @@ templateSelect.style.borderRadius = "6px";
 templateSelect.style.border = "1px solid #ced4da";
 templateSelect.style.backgroundColor = "white";
 templateSelect.style.fontSize = "14px";
-templateSelect.style.marginRight = "20px";
 
 // Populate the select with available templates
 Object.keys(templates).forEach((key) => {
@@ -95,10 +103,71 @@ themeOptions.forEach(({ value, text }) => {
   themeSelect.appendChild(option);
 });
 
-templateSelectorContainer.appendChild(templateLabel);
-templateSelectorContainer.appendChild(templateSelect);
-templateSelectorContainer.appendChild(themeLabel);
-templateSelectorContainer.appendChild(themeSelect);
+// Template selector group
+const templateGroup = document.createElement("div");
+templateGroup.style.display = "flex";
+templateGroup.style.alignItems = "center";
+templateGroup.appendChild(templateLabel);
+templateGroup.appendChild(templateSelect);
+
+// Theme selector group
+const themeGroup = document.createElement("div");
+themeGroup.style.display = "flex";
+themeGroup.style.alignItems = "center";
+themeGroup.appendChild(themeLabel);
+themeGroup.appendChild(themeSelect);
+
+leftControlsContainer.appendChild(templateGroup);
+leftControlsContainer.appendChild(themeGroup);
+
+// Add UI controls container (right side)
+const uiControlsContainer = document.createElement("div");
+uiControlsContainer.style.display = "flex";
+uiControlsContainer.style.gap = "15px";
+uiControlsContainer.style.alignItems = "center";
+
+// UI controls label
+const uiControlsLabel = document.createElement("span");
+uiControlsLabel.textContent = "UI Controls: ";
+uiControlsLabel.style.fontWeight = "600";
+uiControlsLabel.style.fontSize = "14px";
+
+uiControlsContainer.appendChild(uiControlsLabel);
+
+// Create checkboxes for UI components
+const uiOptions = [
+  { key: "showCodeEditor", label: "Code Editor", initial: true },
+  { key: "showFileBrowser", label: "File Browser", initial: true },
+  { key: "showNavigator", label: "Navigator", initial: true },
+];
+
+const checkboxes: Record<string, HTMLInputElement> = {};
+
+uiOptions.forEach(({ key, label, initial }) => {
+  const checkboxContainer = document.createElement("label");
+  checkboxContainer.style.display = "flex";
+  checkboxContainer.style.alignItems = "center";
+  checkboxContainer.style.gap = "5px";
+  checkboxContainer.style.fontSize = "14px";
+  checkboxContainer.style.cursor = "pointer";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = initial;
+  checkbox.style.cursor = "pointer";
+
+  const labelText = document.createElement("span");
+  labelText.textContent = label;
+
+  checkboxContainer.appendChild(checkbox);
+  checkboxContainer.appendChild(labelText);
+  uiControlsContainer.appendChild(checkboxContainer);
+
+  checkboxes[key] = checkbox;
+});
+
+templateSelectorContainer.appendChild(leftControlsContainer);
+templateSelectorContainer.appendChild(uiControlsContainer);
 rootEl.appendChild(templateSelectorContainer);
 
 // Create container for the UI
@@ -167,5 +236,36 @@ themeSelect.addEventListener("change", (e) => {
   const target = e.target as HTMLSelectElement;
   switchTheme(target.value as "light" | "dark" | "device-settings");
 });
+
+// Add event listeners for UI component checkboxes
+Object.entries(checkboxes).forEach(([key, checkbox]) => {
+  checkbox.addEventListener("change", (e) => {
+    const target = e.target as HTMLInputElement;
+    toggleUIComponent(
+      key as "showCodeEditor" | "showFileBrowser" | "showNavigator",
+      target.checked
+    );
+  });
+});
+
+// Function to toggle UI components
+function toggleUIComponent(
+  component: "showCodeEditor" | "showFileBrowser" | "showNavigator",
+  show: boolean
+) {
+  if (!surfpack.ui) return;
+
+  switch (component) {
+    case "showCodeEditor":
+      surfpack.ui.toggleCodeEditor(show);
+      break;
+    case "showFileBrowser":
+      surfpack.ui.toggleFileBrowser(show);
+      break;
+    case "showNavigator":
+      surfpack.ui.toggleNavigator(show);
+      break;
+  }
+}
 
 console.log("UI Demo initialized successfully");

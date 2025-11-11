@@ -23,6 +23,9 @@ export interface UiComponent {
   navigator?: Navigator;
   previewContainer: HTMLElement;
   setTheme(theme: "light" | "dark" | "device-settings"): void;
+  toggleCodeEditor(show: boolean): void;
+  toggleFileBrowser(show: boolean): void;
+  toggleNavigator(show: boolean): void;
   destroy(): void;
 }
 
@@ -72,8 +75,9 @@ export function createUi(
 
   // File browser
   let fileBrowser: FileBrowser | undefined;
+  let fileBrowserContainer: HTMLElement | undefined;
   if (showFileBrowser) {
-    const fileBrowserContainer = document.createElement("div");
+    fileBrowserContainer = document.createElement("div");
     fileBrowserContainer.className = "surfpack-file-browser";
     mainContainer.appendChild(fileBrowserContainer);
 
@@ -82,8 +86,9 @@ export function createUi(
 
   // Code editor
   let codeEditor: CodeEditor | undefined;
+  let codeEditorContainer: HTMLElement | undefined;
   if (showCodeEditor) {
-    const codeEditorContainer = document.createElement("div");
+    codeEditorContainer = document.createElement("div");
     codeEditorContainer.className = "surfpack-code-editor";
     mainContainer.appendChild(codeEditorContainer);
 
@@ -100,8 +105,9 @@ export function createUi(
 
   // Navigator
   let navigator: Navigator | undefined;
+  let navigatorContainer: HTMLElement | undefined;
   if (showNavigator) {
-    const navigatorContainer = document.createElement("div");
+    navigatorContainer = document.createElement("div");
     navigatorContainer.className = "surfpack-iframe-bundler-navigator";
     previewArea.appendChild(navigatorContainer);
 
@@ -139,6 +145,21 @@ export function createUi(
       // Also update code editor theme
       if (codeEditor) {
         codeEditor.setTheme(newTheme);
+      }
+    },
+    toggleCodeEditor(show: boolean) {
+      if (codeEditorContainer) {
+        codeEditorContainer.style.display = show ? "" : "none";
+      }
+    },
+    toggleFileBrowser(show: boolean) {
+      if (fileBrowserContainer) {
+        fileBrowserContainer.style.display = show ? "" : "none";
+      }
+    },
+    toggleNavigator(show: boolean) {
+      if (navigatorContainer) {
+        navigatorContainer.style.display = show ? "" : "none";
       }
     },
     destroy() {
