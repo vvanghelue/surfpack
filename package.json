@@ -11,7 +11,7 @@
     "dev-serve": "serve ./ -l 5101",
     "dev-watch": "node build.js --watch",
     "dev": "npm run build && concurrently -k \"npm:dev-watch\" \"npm:dev-serve\"",
-    "types": "tsc --noEmit --project tsconfig.json",
+    "typecheck": "tsc --noEmit --project tsconfig.json",
     "prepublishOnly": "npm run build:prod"
   },
   "keywords": [],
