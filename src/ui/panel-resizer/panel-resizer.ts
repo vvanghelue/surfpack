@@ -1,3 +1,7 @@
+import { applyResizerStyles } from "./panel-resizer.style.css";
+
+applyResizerStyles();
+
 export type PanelResizerOptions = {
   mainContainer: HTMLElement;
   previewArea: HTMLElement;

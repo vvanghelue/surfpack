@@ -4,7 +4,7 @@ import { Navigator } from "./navigator.js";
 import { applyUiStyles } from "./ui.style.css.js";
 import { applyCodeMirrorStyles } from "./codemirror.style.css.js";
 import type { RunnerFile } from "../index.js";
-import { setupHorizontalResizing } from "./panel-resizer.js";
+import { setupHorizontalResizing } from "./panel-resizer/panel-resizer.js";
 
 export type UiOptions = {
   theme?: "light" | "dark" | "device-settings";

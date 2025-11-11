@@ -82,7 +82,7 @@ const styles = `
     /* File Browser Styles */
     .surfpack-file-browser {
         background-color: var(--surfpack-background);
-        border-right: 1px solid var(--surfpack-border);
+        __border-right: 1px solid var(--surfpack-border);
         width: 250px;
         min-width: 150px;
         max-width: 800px;
@@ -153,7 +153,7 @@ const styles = `
         position: relative;
         flex: 1;
         height: 100%;
-        border-right: 1px solid var(--surfpack-border);
+        __border-right: 1px solid var(--surfpack-border);
         overflow: hidden;
     }
 
@@ -234,33 +234,6 @@ const styles = `
     
 
     .surfpack-debug-log {}
-
-    /* Resize Handles */
-    .surfpack-resize-handle {
-        width: 6px; /* Match HANDLE_WIDTH in ui.ts */
-        background-color: var(--surfpack-border);
-        cursor: col-resize;
-        user-select: none;
-    }
-    .surfpack-resize-handle:hover {
-        background-color: var(--surfpack-accent);
-    }
-
-    /* Resize handle between panels */
-    .surfpack-resize-handle {
-        flex: 0 0 6px;
-        width: 6px;
-        background-color: var(--surfpack-border);
-        cursor: ew-resize;
-        user-select: none;
-        height: auto;
-    }
-    .surfpack-resize-handle:hover {
-        background-color: var(--surfpack-accent);
-    }
-    .surfpack-resize-handle.active {
-        background-color: var(--surfpack-accent);
-    }
 `;
 
 let stylesApplied = false;
