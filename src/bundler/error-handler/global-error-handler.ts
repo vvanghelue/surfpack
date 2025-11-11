@@ -33,7 +33,60 @@ const normalizeError = (value: unknown): NormalizedError => {
   }
 };
 
-const handleRuntimeError = (value: unknown, origin?: string): void => {
+const isNetworkOrResourceError = (
+  error: unknown,
+  event?: ErrorEvent
+): boolean => {
+  // Check if it's a resource loading error (images, CSS, fonts, etc.)
+  if (event?.target && event.target !== window) {
+    const target = event.target as Element;
+    const tagName = target.tagName?.toLowerCase();
+    if (
+      ["img", "link", "script", "video", "audio", "source", "iframe"].includes(
+        tagName
+      )
+    ) {
+      return true;
+    }
+  }
+
+  // Check error message patterns for network errors
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    const networkErrorPatterns = [
+      "network error",
+      "failed to fetch",
+      "load failed",
+      "loading css chunk",
+      "loading chunk",
+      "connection refused",
+      "timeout",
+      "network request failed",
+      "fetch error",
+      "cors error",
+      "resource not found",
+      "404",
+      "503",
+      "failed to load resource",
+    ];
+
+    return networkErrorPatterns.some((pattern) => message.includes(pattern));
+  }
+
+  return false;
+};
+
+const handleRuntimeError = (
+  value: unknown,
+  origin?: string,
+  event?: ErrorEvent
+): void => {
+  // Filter out network/resource loading errors
+  if (isNetworkOrResourceError(value, event)) {
+    console.warn("Network/Resource error (ignored by error overlay):", value);
+    return;
+  }
+
   console.error(value);
   const { message, stack } = normalizeError(value);
   if (value instanceof CompilationError) {
@@ -61,7 +114,7 @@ export const installGlobalErrorHandler = (): void => {
       }
       event.preventDefault();
       const error = event.error || new Error(event.message || "Unknown error");
-      handleRuntimeError(error, "error");
+      handleRuntimeError(error, "error", event);
     },
     true
   );
