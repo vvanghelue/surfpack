@@ -1,6 +1,8 @@
 import { EditorView, basicSetup } from "codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
+import { keymap } from "@codemirror/view";
+import { indentWithTab } from "@codemirror/commands";
 import type { RunnerFile } from "../index.js";
 import { debounce } from "../utils/debounce.js";
 
@@ -41,6 +43,7 @@ export class CodeEditor {
       extensions: [
         basicSetup,
         javascript({ jsx: true, typescript: true }),
+        keymap.of([indentWithTab]),
         theme === "dark" ? vscodeDark : vscodeLight,
         EditorView.updateListener.of((update) => {
           if (
