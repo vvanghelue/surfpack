@@ -153,7 +153,12 @@ export function init(options: InitOptions) {
           // Create new iframe and reload bundler
           iframe = createIframe();
           iframeContainer.appendChild(iframe);
-          iframe.src = options.bundlerUrl || "dev-bundler.html";
+
+          const defaultBundlerUrl =
+            location.hostname === "localhost"
+              ? "dev-bundler.html"
+              : "https://vvanghelue.github.io/surfpack/online/online-bundler.html";
+          iframe.src = options.bundlerUrl || defaultBundlerUrl;
           isIframeReady = false;
         }
       });
