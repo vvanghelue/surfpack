@@ -51,7 +51,7 @@ async function buildBundle() {
         sourcemap: !isProduction,
       },
       resolve: {
-        extensions: [".ts", ".js"],
+        extensions: [".ts", ".tsx", ".js", ".jsx"],
       },
     };
 
@@ -119,7 +119,7 @@ async function buildBundle() {
             sourcemap: true,
           },
           resolve: {
-            extensions: [".ts", ".js"],
+            extensions: [".ts", ".tsx", ".js", ".jsx"],
           },
         };
 

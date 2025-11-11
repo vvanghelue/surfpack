@@ -16,6 +16,7 @@ export type UiOptions = {
   codeEditorInitialWidth?: number;
   fileBrowserDefaultExpanded?: boolean;
   debounceDelay?: number; // Default: 700ms - delay for code editor changes
+  implementation?: "legacy" | "react";
   // showDebugLogMessages?: boolean; // not implemented yet
 };
 

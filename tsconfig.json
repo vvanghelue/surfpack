@@ -14,7 +14,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "lib": ["DOM", "DOM.Iterable", "esnext"]
+    "lib": ["DOM", "DOM.Iterable", "esnext"],
+    "jsx": "react-jsx"
   },
   "include": [
     "src/**/*.ts",

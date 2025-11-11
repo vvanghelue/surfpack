@@ -11,6 +11,8 @@ type Template = {
   entryFile?: string | undefined;
 };
 
+type UiImplementation = "legacy" | "react";
+
 // Available templates
 const templates: Record<string, Template> = {
   "react-template": reactApp,
@@ -120,6 +122,40 @@ themeGroup.appendChild(themeSelect);
 leftControlsContainer.appendChild(templateGroup);
 leftControlsContainer.appendChild(themeGroup);
 
+const uiModeLabel = document.createElement("label");
+uiModeLabel.textContent = "UI: ";
+uiModeLabel.style.marginRight = "10px";
+uiModeLabel.style.fontWeight = "600";
+uiModeLabel.style.fontSize = "14px";
+
+const uiModeSelect = document.createElement("select");
+uiModeSelect.style.padding = "8px 12px";
+uiModeSelect.style.borderRadius = "6px";
+uiModeSelect.style.border = "1px solid #ced4da";
+uiModeSelect.style.backgroundColor = "white";
+uiModeSelect.style.fontSize = "14px";
+
+const uiModeOptions = [
+  { value: "react", text: "React (experimental)" },
+  { value: "legacy", text: "Legacy" },
+];
+
+uiModeOptions.forEach(({ value, text }) => {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = text;
+  if (value === "react") option.selected = true;
+  uiModeSelect.appendChild(option);
+});
+
+const uiModeGroup = document.createElement("div");
+uiModeGroup.style.display = "flex";
+uiModeGroup.style.alignItems = "center";
+uiModeGroup.appendChild(uiModeLabel);
+uiModeGroup.appendChild(uiModeSelect);
+
+leftControlsContainer.appendChild(uiModeGroup);
+
 // Add UI controls container (right side)
 const uiControlsContainer = document.createElement("div");
 uiControlsContainer.style.display = "flex";
@@ -180,31 +216,36 @@ const uiContainer = document.createElement("div");
 // uiContainer.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
 rootEl.appendChild(uiContainer);
 
-// Initialize the runner with UI
-let surfpack = init({
-  bundlerUrl: "./playground-iframe.html",
-  container: uiContainer,
-  files: files as RunnerFile[],
-  entryFile: entryFile,
-  debugMode: true,
-  ui: {
-    theme: "dark",
-    width: "100%",
-    height: 800,
-    showCodeEditor: true,
-    showFileBrowser: true,
-    showNavigator: true,
-  },
-  onBundleComplete: (result: { fileCount: number; warnings?: string[] }) => {
-    console.log("Bundle completed:", result);
-  },
-  onBundleError: (error: string) => {
-    console.error("Bundle error:", error);
-  },
-  onIframeReady: () => {
-    console.log("Iframe is ready");
-  },
-});
+function createRunner(implementation: UiImplementation) {
+  return init({
+    bundlerUrl: "./playground-iframe.html",
+    container: uiContainer,
+    files: files as RunnerFile[],
+    entryFile: entryFile,
+    debugMode: true,
+    ui: {
+      theme: themeSelect.value as "light" | "dark" | "device-settings",
+      width: "100%",
+      height: 800,
+      showCodeEditor: checkboxes.showCodeEditor.checked,
+      showFileBrowser: checkboxes.showFileBrowser.checked,
+      showNavigator: checkboxes.showNavigator.checked,
+      implementation,
+    },
+    onBundleComplete: (result: { fileCount: number; warnings?: string[] }) => {
+      console.log("Bundle completed:", result);
+    },
+    onBundleError: (error: string) => {
+      console.error("Bundle error:", error);
+    },
+    onIframeReady: () => {
+      console.log("Iframe is ready");
+    },
+  });
+}
+
+let currentUiImplementation = uiModeSelect.value as UiImplementation;
+let surfpack = createRunner(currentUiImplementation);
 
 // Function to switch templates
 function switchTemplate(templateKey: string) {
@@ -235,6 +276,15 @@ templateSelect.addEventListener("change", (e) => {
 themeSelect.addEventListener("change", (e) => {
   const target = e.target as HTMLSelectElement;
   switchTheme(target.value as "light" | "dark" | "device-settings");
+});
+
+uiModeSelect.addEventListener("change", (e) => {
+  const target = e.target as HTMLSelectElement;
+  const nextImplementation = target.value as UiImplementation;
+  if (nextImplementation === currentUiImplementation) return;
+  surfpack.destroy();
+  currentUiImplementation = nextImplementation;
+  surfpack = createRunner(currentUiImplementation);
 });
 
 // Add event listeners for UI component checkboxes

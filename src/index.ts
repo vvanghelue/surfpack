@@ -4,7 +4,9 @@ import {
   MessageToIframe,
   MessageLoadRoute,
 } from "./iframe-runner/iframe-messaging.js";
-import { UiOptions, createUi } from "./ui/ui.js";
+import { createUi } from "./ui/ui.js";
+import { createUiReact } from "./ui-react-rewrite/index.js";
+import type { UiOptions, UiComponent } from "./ui/ui.js";
 
 export * from "./iframe-runner/iframe-runner.js";
 export * from "./standalone-runner/standalone-runner.js";
@@ -106,11 +108,14 @@ export function init(options: InitOptions) {
   };
 
   // Create UI if ui options are provided
-  let ui: ReturnType<typeof createUi> | null = null;
+  let ui: UiComponent | null = null;
   let iframeContainer: HTMLElement;
 
   if (options.ui) {
-    ui = createUi(options.container, options.ui, (updatedFile) => {
+    const implementation = options.ui.implementation ?? "legacy";
+    const uiFactory = implementation === "react" ? createUiReact : createUi;
+
+    ui = uiFactory(options.container, options.ui, (updatedFile) => {
       // Handle file changes from the code editor
       const fileIndex = currentFiles.findIndex(
         (f) => f.path === updatedFile.path
@@ -239,9 +244,43 @@ export function init(options: InitOptions) {
   // Set up message listener
   window.addEventListener("message", handleMessage);
 
+  const attachIframeToContainer = (target: HTMLElement) => {
+    if (!iframe) return;
+    if (iframe.parentElement !== target) {
+      target.appendChild(iframe);
+    }
+    iframeContainer = target;
+  };
+
+  const resolvePreferredContainer = () => {
+    if (!ui) {
+      return options.container;
+    }
+
+    const candidate = ui.previewContainer;
+    return candidate ?? options.container;
+  };
+
+  const isReactPreviewContainerReady = (element: HTMLElement) => {
+    return element.classList?.contains("surfpack-iframe-bundler-iframe");
+  };
+
+  const mountIframeWithRetry = (attempt = 0) => {
+    const target = resolvePreferredContainer();
+    const shouldAttach =
+      !ui || isReactPreviewContainerReady(target) || attempt >= 10;
+
+    if (shouldAttach) {
+      attachIframeToContainer(target);
+      return;
+    }
+
+    requestAnimationFrame(() => mountIframeWithRetry(attempt + 1));
+  };
+
   // Create and setup iframe
   iframe = createIframe();
-  iframeContainer.appendChild(iframe);
+  mountIframeWithRetry();
   iframe.src = options.bundlerUrl || "dev-bundler.html";
 
   return {
