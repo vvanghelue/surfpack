@@ -4,15 +4,28 @@ import { reactRouterApp } from "./code-templates/react-router-template.js";
 import { vanillaJsTodoApp } from "./code-templates/vanilla-js-todo.js";
 import { init, type RunnerFile } from "../index.js";
 
+type Template = {
+  templateName: string;
+  description: string;
+  files: { path: string; content: string }[];
+  entryFile?: string | undefined;
+};
+
 // Available templates
-const templates = {
+const templates: Record<string, Template> = {
   "react-template": reactApp,
   "react-runtime-error": reactRuntimeErrorApp,
   "react-router": reactRouterApp,
   "vanilla-js-todo": vanillaJsTodoApp,
 };
 
-let { files, entryFile } = reactApp;
+let {
+  files,
+  entryFile,
+}: {
+  files: { path: string; content: string }[];
+  entryFile?: string;
+} = reactApp;
 
 const rootEl = document.querySelector("#root") as HTMLElement;
 
@@ -126,7 +139,7 @@ let surfpack = init({
 
 // Function to switch templates
 function switchTemplate(templateKey: string) {
-  const template = templates[templateKey as keyof typeof templates];
+  const template = templates[templateKey];
   if (!template) return;
 
   files = template.files;

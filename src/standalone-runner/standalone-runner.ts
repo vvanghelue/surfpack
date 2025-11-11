@@ -13,7 +13,7 @@ export async function standaloneRunner(options: StandaloneRunnerOptions) {
 
   const files = sanitizeFiles(options?.files);
 
-  // if (!currentEntryFile || typeof currentEntryFile !== "string") {
+  // if (!options.entryFile || typeof options.entryFile !== "string") {
   //   throw new Error(
   //     'You should provide a string as "entryFile" in the standalone runner options.'
   //   );
@@ -23,7 +23,7 @@ export async function standaloneRunner(options: StandaloneRunnerOptions) {
     installGlobalErrorHandler();
   }
 
-  const { code, css } = await buildBundle(files, currentEntryFile);
+  const { code, css } = await buildBundle(files, options.entryFile);
 
   if (!code.trim()) {
     throw new Error("Bundle is empty. Check your entry file exports.");
