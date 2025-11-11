@@ -84,8 +84,8 @@ const styles = `
         background-color: var(--surfpack-background);
         __border-right: 1px solid var(--surfpack-border);
         width: 250px;
-        min-width: 150px;
-        max-width: 800px;
+        width: 200px;
+        // max-width: 800px;
         height: 100%;
         overflow: auto;
         font-size: 12px;
@@ -151,10 +151,11 @@ const styles = `
     /* Code Editor Styles */
     .surfpack-code-editor {
         position: relative;
-        flex: 1;
+        __flex: 1;
         height: 100%;
         __border-right: 1px solid var(--surfpack-border);
         overflow: hidden;
+        width: 480px;
     }
 
     /* Preview Area Styles */
@@ -163,7 +164,7 @@ const styles = `
         flex: 1;
         display: flex;
         flex-direction: column;
-        width: 400px;
+        __width: 400px;
         min-width: 200px;
         __max-width: 1200px;
         height: 100%;

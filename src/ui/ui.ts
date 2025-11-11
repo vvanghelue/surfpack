@@ -13,6 +13,7 @@ export type UiOptions = {
   showCodeEditor?: boolean;
   showFileBrowser?: boolean;
   showNavigator?: boolean;
+  codeEditorInitialWidth?: number;
   debounceDelay?: number; // Default: 700ms - delay for code editor changes
   // showDebugLogMessages?: boolean; // not implemented yet
 };
@@ -51,6 +52,7 @@ export function createUi(
     showCodeEditor = true,
     showFileBrowser = true,
     showNavigator = true,
+    codeEditorInitialWidth = undefined,
     debounceDelay = 700,
   } = options;
 
@@ -83,6 +85,9 @@ export function createUi(
   if (showCodeEditor) {
     codeEditorContainer = document.createElement("div");
     codeEditorContainer.className = "surfpack-code-editor";
+    if (codeEditorInitialWidth) {
+      codeEditorContainer.style.width = `${codeEditorInitialWidth}px`;
+    }
     mainContainer.appendChild(codeEditorContainer);
 
     codeEditor = new CodeEditor(
