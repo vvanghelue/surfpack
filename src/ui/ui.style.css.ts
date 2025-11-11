@@ -169,7 +169,7 @@ const styles = `
     }
 
     /* Navigator Styles */
-    .surfpack-navigator-url {
+    .surfpack-navigator-input {
         flex: 1;
         padding: 4px 8px;
         background-color: var(--surfpack-background);
@@ -177,8 +177,15 @@ const styles = `
         border-radius: 4px;
         font-size: 12px;
         font-family: monospace;
-        color: var(--surfpack-muted-foreground);
+        color: var(--surfpack-foreground);
+        outline: none;
+        transition: border-color 0.2s ease;
     }
+    
+    .surfpack-navigator-input:focus {
+        border-color: var(--surfpack-accent);
+    }
+    
     .surfpack-navigator-refresh {
         padding: 4px 8px;
         border: 1px solid var(--surfpack-border);
@@ -186,7 +193,9 @@ const styles = `
         background-color: var(--surfpack-background);
         color: var(--surfpack-foreground);
         cursor: pointer;
+        font-size: 12px;
     }
+    
     .surfpack-navigator-refresh:hover {
         background-color: var(--surfpack-hover-background);
     }

@@ -26,19 +26,31 @@ export const vanillaJsTodoApp = {
   <body>
     <div class="app">
       <div class="header">
-        <h1>📋 Pure JS Todo</h1>
+        <h1><i class="material-icons" style="font-size: 2.5rem; vertical-align: middle; margin-right: 10px;">assignment</i>Pure JS Todo</h1>
         <p>No frameworks, just vanilla JavaScript!</p>
       </div>
 
       <div class="todo-form">
         <input type="text" id="todo-input" placeholder="Add a new todo..." />
-        <button id="add-btn">Add Todo</button>
+        <button id="add-btn">
+          <i class="material-icons">add</i>
+          Add Todo
+        </button>
       </div>
 
       <div class="filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-        <button class="filter-btn" data-filter="completed">Completed</button>
+        <button class="filter-btn active" data-filter="all">
+          <i class="material-icons">list</i>
+          All
+        </button>
+        <button class="filter-btn" data-filter="active">
+          <i class="material-icons">radio_button_unchecked</i>
+          Active
+        </button>
+        <button class="filter-btn" data-filter="completed">
+          <i class="material-icons">check_circle</i>
+          Completed
+        </button>
       </div>
 
       <div id="todo-list" class="todo-list"></div>
@@ -121,6 +133,9 @@ body {
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #add-btn:hover {
@@ -148,6 +163,9 @@ body {
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .filter-btn.active {
@@ -193,13 +211,18 @@ body {
 }
 
 .todo-checkbox.checked::after {
-  content: '✓';
+  content: '';
   position: absolute;
   color: white;
   font-size: 12px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.todo-checkbox.checked .material-icons {
+  color: white;
+  font-size: 12px;
 }
 
 .todo-text {
@@ -221,6 +244,9 @@ body {
   cursor: pointer;
   font-size: 12px;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .delete-btn:hover {
@@ -237,6 +263,7 @@ body {
   font-size: 3rem;
   margin-bottom: 15px;
   display: block;
+  color: #667eea;
 }
 
 .stats {
@@ -381,9 +408,14 @@ body {
     
     div.innerHTML = \`
       <div class="todo-checkbox \${todo.completed ? 'checked' : ''}" 
-           onclick="app.toggleTodo('\${todo.id}')"></div>
+           onclick="app.toggleTodo('\${todo.id}')">
+        \${todo.completed ? '<i class="material-icons">check</i>' : ''}
+      </div>
       <span class="todo-text \${todo.completed ? 'completed' : ''}">\${todo.text}</span>
-      <button class="delete-btn" onclick="app.deleteTodo('\${todo.id}')">Delete</button>
+      <button class="delete-btn" onclick="app.deleteTodo('\${todo.id}')">
+        <i class="material-icons">delete</i>
+        Delete
+      </button>
     \`;
     
     return div;
@@ -393,20 +425,20 @@ body {
     const div = document.createElement('div');
     div.className = 'empty-state';
     
-    let emoji, message;
+    let icon, message;
     if (this.filter === 'completed') {
-      emoji = '🎉';
+      icon = 'celebration';
       message = 'No completed todos yet!';
     } else if (this.filter === 'active') {
-      emoji = '✨';
+      icon = 'task_alt';
       message = 'No active todos. Great job!';
     } else {
-      emoji = '🌟';
+      icon = 'assignment';
       message = 'No todos yet. Add one above!';
     }
     
     div.innerHTML = \`
-      <span class="emoji">\${emoji}</span>
+      <i class="material-icons emoji">\${icon}</i>
       <p>\${message}</p>
     \`;
     

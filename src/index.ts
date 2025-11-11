@@ -2,6 +2,7 @@ import {
   MessageFilesUpdate,
   MessageFromIframe,
   MessageToIframe,
+  MessageLoadRoute,
 } from "./iframe-runner/iframe-messaging.js";
 import { UiOptions, createUi } from "./ui/ui.js";
 
@@ -31,7 +32,7 @@ export type InitOptions = {
   }) => void;
   onBundleError?: (error: string) => void;
   onIframeReady?: () => void;
-  onAppUrlChange?: () => void; // when the app URL changes in the bundler iframe
+  onAppUrlChange?: (newUrl: string) => void; // when the app URL changes in the bundler iframe
   ui?: UiOptions;
 };
 
@@ -49,6 +50,7 @@ export function init(options: InitOptions) {
   let pendingFiles: RunnerFile[] | null = null;
   let currentFiles: RunnerFile[] = [...options.files];
   let currentEntryFile: string | undefined = options.entryFile;
+  let pendingRoute: string | null = null; // Store route for refresh
 
   // Define sendFiles function first
   const postMessage = (message: MessageToIframe) => {
@@ -57,7 +59,11 @@ export function init(options: InitOptions) {
     }
   };
 
-  const sendFiles = (files: RunnerFile[], entry?: string) => {
+  const sendFiles = (
+    files: RunnerFile[],
+    entry?: string,
+    initialRoute?: string
+  ) => {
     if (!isIframeReady) {
       pendingFiles = files;
       return;
@@ -68,11 +74,32 @@ export function init(options: InitOptions) {
       payload: {
         files: files,
         entry: entry,
+        initialRoute: initialRoute,
       },
     };
 
     if (options.debugMode) {
       console.log("[Runner] Sending files:", message);
+    }
+
+    postMessage(message);
+  };
+
+  const navigateToRoute = (route: string) => {
+    if (!isIframeReady) {
+      console.warn("[Runner] Cannot navigate: iframe not ready");
+      return;
+    }
+
+    const message: MessageLoadRoute = {
+      type: "routing-history-load-route",
+      payload: {
+        routeToGoTo: route,
+      },
+    };
+
+    if (options.debugMode) {
+      console.log("[Runner] Navigating to route:", route);
     }
 
     postMessage(message);
@@ -90,7 +117,7 @@ export function init(options: InitOptions) {
       );
       if (fileIndex >= 0) {
         currentFiles[fileIndex] = updatedFile;
-        sendFiles(currentFiles, currentEntryFile);
+        sendFiles(currentFiles, currentEntryFile, "/");
       }
     });
 
@@ -116,9 +143,24 @@ export function init(options: InitOptions) {
     if (ui.navigator) {
       ui.navigator.setUrl("Loading...");
       ui.navigator.onRefresh(() => {
-        if (iframe?.contentWindow) {
-          iframe.contentWindow.location.reload();
+        if (iframe && iframeContainer.contains(iframe)) {
+          // Store current route from navigator input for restoration after reload
+          pendingRoute = ui!.navigator!.getCurrentRoute();
+
+          // Remove old iframe
+          iframeContainer.removeChild(iframe);
+
+          // Create new iframe and reload bundler
+          iframe = createIframe();
+          iframeContainer.appendChild(iframe);
+          iframe.src = options.bundlerUrl || "dev-bundler.html";
+          isIframeReady = false;
         }
+      });
+
+      // Connect navigator to route navigation
+      ui.navigator.onNavigate((route) => {
+        navigateToRoute(route);
       });
     }
   } else {
@@ -140,19 +182,28 @@ export function init(options: InitOptions) {
     switch (data.type) {
       case "iframe-ready":
         isIframeReady = true;
+        // Don't set URL from iframe src - routing is virtual and starts with "/"
         if (ui?.navigator) {
-          ui.navigator.setUrl(iframe?.src || "");
+          if (pendingRoute) {
+            // Restore route after refresh
+            ui.navigator.setUrl(pendingRoute);
+          } else {
+            ui.navigator.setUrl("/");
+          }
         }
         if (options.onIframeReady) {
           options.onIframeReady();
         }
         // Send pending files if any
         if (pendingFiles) {
-          sendFiles(pendingFiles, currentEntryFile);
+          sendFiles(pendingFiles, currentEntryFile, pendingRoute || "/");
           pendingFiles = null;
         } else {
-          sendFiles(currentFiles, currentEntryFile);
+          sendFiles(currentFiles, currentEntryFile, pendingRoute || "/");
         }
+
+        // Clear pending route since it's been sent with files
+        pendingRoute = null;
         break;
 
       case "build-result-ack":
@@ -166,6 +217,15 @@ export function init(options: InitOptions) {
           if (options.onBundleError && data.payload.error) {
             options.onBundleError(data.payload.error);
           }
+        }
+        break;
+
+      case "routing-history-state-changed":
+        if (ui?.navigator) {
+          ui.navigator.setUrl(data.payload.newRoute);
+        }
+        if (options.onAppUrlChange) {
+          options.onAppUrlChange(data.payload.newRoute);
         }
         break;
     }
@@ -213,7 +273,7 @@ export function init(options: InitOptions) {
           ui.fileBrowser.selectFile(currentFiles[0].path);
         }
       }
-      sendFiles(currentFiles, entry);
+      sendFiles(currentFiles, entry, "/");
     },
 
     updateFile(file: RunnerFile) {
@@ -230,7 +290,7 @@ export function init(options: InitOptions) {
         ui.fileBrowser.setFiles(currentFiles);
       }
 
-      sendFiles(currentFiles, currentEntryFile);
+      sendFiles(currentFiles, currentEntryFile, "/");
     },
 
     get isReady() {
@@ -239,6 +299,10 @@ export function init(options: InitOptions) {
 
     get ui() {
       return ui;
+    },
+
+    navigateToRoute(route: string) {
+      navigateToRoute(route);
     },
   };
 }

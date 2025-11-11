@@ -6,15 +6,29 @@ import {
 import { sanitizeFiles } from "../bundler/source-file.js";
 import {
   MessageFilesUpdate,
+  MessageLoadRoute,
   MessageToIframe,
   postToParent,
 } from "./iframe-messaging.js";
+import {
+  applyRouteChangeFromParent,
+  initializeRoutingState,
+} from "./routing-history-state.js";
+
+let pendingInitialRoute: string | null = null;
 
 const isFilesUpdateMessage = (data: unknown) => {
   if (typeof data !== "object" || data === null) {
     return false;
   }
   return (data as { type?: unknown }).type === "files-update";
+};
+
+const isLoadRouteMessage = (data: unknown) => {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+  return (data as { type?: unknown }).type === "routing-history-load-route";
 };
 
 let buildCounter = 0;
@@ -24,11 +38,10 @@ const handleFilesUpdate = async (
 ): Promise<void> => {
   const files = sanitizeFiles(rawPayload?.files);
 
-  // if (typeof rawPayload?.entry !== "string") {
-  //   throw new Error(
-  //     'You should provide a string as "entry" in the files update message.'
-  //   );
-  // }
+  // Store initial route if provided
+  if (rawPayload?.initialRoute) {
+    pendingInitialRoute = rawPayload.initialRoute;
+  }
 
   const entry = rawPayload?.entry;
   const token = ++buildCounter;
@@ -65,6 +78,10 @@ const handleFilesUpdate = async (
       type: "build-result-ack",
       payload: { fileCount: files.length, success: true },
     });
+
+    // Initialize routing state management after successful bundle
+    initializeRoutingState(pendingInitialRoute || "/");
+    pendingInitialRoute = null;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const stack = error instanceof Error ? error.stack || "" : "";
@@ -87,11 +104,15 @@ export const registerParentMessageListener = (): void => {
     if (event.source !== window.parent) {
       return;
     }
-    if (!isFilesUpdateMessage(event.data)) {
-      return;
-    }
-    if (event.data.type === "files-update") {
-      handleFilesUpdate(event.data.payload);
+
+    if (isFilesUpdateMessage(event.data)) {
+      if (event.data.type === "files-update") {
+        handleFilesUpdate(event.data.payload);
+      }
+    } else if (isLoadRouteMessage(event.data)) {
+      if (event.data.type === "routing-history-load-route") {
+        applyRouteChangeFromParent(event.data as MessageLoadRoute);
+      }
     }
   });
 };
