@@ -4,6 +4,7 @@ import { Navigator } from "./navigator.js";
 import { applyUiStyles } from "./ui.style.css.js";
 import { applyCodeMirrorStyles } from "./codemirror.style.css.js";
 import type { RunnerFile } from "../index.js";
+import { setupHorizontalResizing } from "./panel-resizer.js";
 
 export type UiOptions = {
   theme?: "light" | "dark" | "device-settings";
@@ -33,16 +34,9 @@ function applyTheme(
   container: HTMLElement,
   theme: "light" | "dark" | "device-settings"
 ): void {
-  // Remove existing theme classes
   container.classList.remove("dark-mode", "light-mode");
-
-  if (theme === "dark") {
-    container.classList.add("dark-mode");
-  } else if (theme === "light") {
-    container.classList.add("light-mode");
-  }
-  // For "device-settings", we rely on CSS @media (prefers-color-scheme: dark)
-  // so no class is needed
+  if (theme === "dark") container.classList.add("dark-mode");
+  else if (theme === "light") container.classList.add("light-mode");
 }
 
 export function createUi(
@@ -58,7 +52,6 @@ export function createUi(
     showFileBrowser = true,
     showNavigator = true,
     debounceDelay = 700,
-    // showDebugLogMessages = false, // not implemented yet
   } = options;
 
   // Apply styles
@@ -134,6 +127,31 @@ export function createUi(
     codeEditor.setTheme(theme);
   }
 
+  // Setup horizontal resizing (handles auto-created if not provided)
+  const isVisible = (el?: HTMLElement) =>
+    !!el && getComputedStyle(el).display !== "none";
+
+  let cleanupResizer: () => void = () => {};
+  const setupResizerForCurrent = () => {
+    // Always tear down previous handles/listeners before re-initializing
+    cleanupResizer();
+    cleanupResizer = setupHorizontalResizing({
+      mainContainer,
+      previewArea,
+      fileBrowserContainer: isVisible(fileBrowserContainer)
+        ? fileBrowserContainer
+        : undefined,
+      codeEditorContainer: isVisible(codeEditorContainer)
+        ? codeEditorContainer
+        : undefined,
+      handleWidth: 6,
+      min: { fileBrowser: 150, editor: 200, preview: 200 },
+    });
+  };
+
+  // Initial setup (respects initial visibility of panels)
+  setupResizerForCurrent();
+
   return {
     container: mainContainer,
     fileBrowser,
@@ -150,11 +168,15 @@ export function createUi(
     toggleCodeEditor(show: boolean) {
       if (codeEditorContainer) {
         codeEditorContainer.style.display = show ? "" : "none";
+        // Recreate resizer to reflect new visible/hidden state
+        setupResizerForCurrent();
       }
     },
     toggleFileBrowser(show: boolean) {
       if (fileBrowserContainer) {
         fileBrowserContainer.style.display = show ? "" : "none";
+        // Recreate resizer to reflect new visible/hidden state
+        setupResizerForCurrent();
       }
     },
     toggleNavigator(show: boolean) {
@@ -169,6 +191,7 @@ export function createUi(
       fileBrowser?.destroy();
       codeEditor?.destroy();
       navigator?.destroy();
+      cleanupResizer();
     },
   };
 }
