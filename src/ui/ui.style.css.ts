@@ -68,7 +68,7 @@ const styles = `
         box-sizing: border-box;
         display: flex;
         border: 1px solid var(--surfpack-border);
-        __border-radius: 4px;
+        border-radius: 4px;
         __box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         display: flex;
@@ -122,7 +122,7 @@ const styles = `
         background-color: var(--surfpack-hover-background);
     }
     .surfpack-file-browser .file-item.active {
-        background-color: var(--surfpack-accent) !important;
+        background-color: color-mix(in srgb, var(--surfpack-foreground) 10%, transparent) !important;
         color: var(--surfpack-foreground-ultra) !important;
     }
     .surfpack-file-browser .toggle-icon,

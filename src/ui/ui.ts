@@ -2,6 +2,7 @@ import { CodeEditor } from "./code-editor.js";
 import { FileBrowser } from "./file-browser.js";
 import { Navigator } from "./navigator.js";
 import { applyUiStyles } from "./ui.style.css.js";
+import { applyCodeMirrorStyles } from "./codemirror.style.css.js";
 import type { RunnerFile } from "../index.js";
 
 export type UiOptions = {
@@ -59,6 +60,7 @@ export function createUi(
 
   // Apply styles
   applyUiStyles();
+  applyCodeMirrorStyles();
 
   // main UI container
   const mainContainer = document.createElement("div");
