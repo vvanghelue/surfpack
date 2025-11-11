@@ -1,8 +1,45 @@
 import { rolldown } from "rolldown";
 import { execSync, spawn } from "child_process";
+import { readFileSync, statSync } from "fs";
+import { join } from "path";
 
 const isProduction = process.argv.includes("--production");
 const shouldWatch = process.argv.includes("--watch");
+
+function formatBytes(bytes) {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+function displayBundleSize() {
+  console.log("\n📊 Bundle Size Analysis:");
+  console.log("========================");
+
+  try {
+    const distFiles = ["dist/index.js", "dist/index.d.ts"];
+
+    distFiles.forEach((file) => {
+      try {
+        const stats = statSync(file);
+        const size = formatBytes(stats.size);
+        console.log(`📦 ${file}: ${size}`);
+
+        // Also show gzipped size estimation (rough calculation)
+        if (file.endsWith(".js")) {
+          const gzippedSize = Math.round(stats.size * 0.3); // Rough estimate
+          console.log(`🗜️  ${file} (gzipped ~): ${formatBytes(gzippedSize)}`);
+        }
+      } catch (err) {
+        console.log(`❌ Could not read ${file}: ${err.message}`);
+      }
+    });
+  } catch (error) {
+    console.error("❌ Failed to analyze bundle size:", error.message);
+  }
+}
 
 async function buildBundle() {
   try {
@@ -106,6 +143,11 @@ async function buildBundle() {
           "❌ Failed to generate TypeScript declarations:",
           error.message
         );
+      }
+
+      // Show bundle size analysis for production builds
+      if (isProduction) {
+        displayBundleSize();
       }
     }
   } catch (error) {

@@ -11,6 +11,7 @@ export type UiOptions = {
   showCodeEditor?: boolean;
   showFileBrowser?: boolean;
   showNavigator?: boolean;
+  debounceDelay?: number; // Default: 700ms - delay for code editor changes
   // showDebugLogMessages?: boolean; // not implemented yet
 };
 
@@ -52,6 +53,7 @@ export function createUi(
     showCodeEditor = true,
     showFileBrowser = true,
     showNavigator = true,
+    debounceDelay = 700,
     // showDebugLogMessages = false, // not implemented yet
   } = options;
 
@@ -83,7 +85,11 @@ export function createUi(
     codeEditorContainer.className = "surfpack-code-editor";
     mainContainer.appendChild(codeEditorContainer);
 
-    codeEditor = new CodeEditor(codeEditorContainer, onFileChange);
+    codeEditor = new CodeEditor(
+      codeEditorContainer,
+      onFileChange,
+      debounceDelay
+    );
   }
 
   // Preview area, on the right (contains navigator and iframe)

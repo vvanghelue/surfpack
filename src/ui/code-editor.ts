@@ -2,6 +2,7 @@ import { EditorView, basicSetup } from "codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { vscodeDark, vscodeLight } from "@uiw/codemirror-theme-vscode";
 import type { RunnerFile } from "../index.js";
+import { debounce } from "../utils/debounce.js";
 
 export class CodeEditor {
   private container: HTMLElement;
@@ -11,13 +12,18 @@ export class CodeEditor {
   private currentTheme: "light" | "dark" | "device-settings" =
     "device-settings";
   private isLoadingFile = false;
+  private debouncedFileChange: (file: RunnerFile) => void;
 
   constructor(
     container: HTMLElement,
-    onFileChange?: (file: RunnerFile) => void
+    onFileChange?: (file: RunnerFile) => void,
+    debounceDelay: number = 700
   ) {
     this.container = container;
     this.onFileChange = onFileChange;
+    this.debouncedFileChange = debounce((file: RunnerFile) => {
+      this.onFileChange?.(file);
+    }, debounceDelay);
     this.initializeEditor();
   }
 
@@ -44,7 +50,7 @@ export class CodeEditor {
             !this.isLoadingFile
           ) {
             this.currentFile.content = update.state.doc.toString();
-            this.onFileChange(this.currentFile);
+            this.debouncedFileChange(this.currentFile);
           }
         }),
         EditorView.theme({

@@ -11,7 +11,6 @@
   "scripts": {
     "build": "rimraf dist && node build.js",
     "build:prod": "rimraf dist && node build.js --production",
-    "build:analyze": "rimraf dist && node analyze-bundle.js",
     "dev-serve": "serve ./ -l 5101",
     "dev-watch": "node build.js --watch",
     "dev": "npm run build && concurrently -k \"npm:dev-watch\" \"npm:dev-serve\"",
