@@ -23,7 +23,7 @@ export function createIcon(
     title?: string;
   } = {}
 ): HTMLElement {
-  const { size = 16, className = "", title } = options;
+  const { size = 14, className = "", title } = options;
 
   const element = document.createElement("span");
   element.className = `icon ${className}`;

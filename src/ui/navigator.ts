@@ -31,7 +31,7 @@ export class Navigator {
     // Refresh button
     this.refreshButton.className = "surfpack-navigator-refresh";
     const refreshIcon = createIcon(icons.refresh, {
-      size: 16,
+      size: 12,
       title: "Refresh",
     });
     this.refreshButton.appendChild(refreshIcon);

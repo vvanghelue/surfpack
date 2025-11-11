@@ -112,13 +112,11 @@ export class FileBrowser {
 
     const toggleIcon = createIcon(icons.chevronDown, {
       className: "toggle-icon",
-      size: 14,
       title: "Toggle folder",
     });
 
     const folderIcon = createIcon(icons.folder, {
       className: "folder-icon",
-      size: 14,
     });
 
     const label = document.createElement("span");

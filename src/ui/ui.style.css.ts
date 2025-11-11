@@ -128,12 +128,12 @@ const styles = `
     .surfpack-file-browser .toggle-icon,
     .surfpack-file-browser .file-icon,
     .surfpack-file-browser .folder-icon {
-        margin-right: 6px;
+        margin-right: 4px;
         display: flex;
         align-items: center;
     }
     .surfpack-file-browser .toggle-icon {
-        margin-right: 4px;
+        margin-right: 2px;
     }
     .surfpack-file-browser .icon svg {
         color: var(--surfpack-muted-foreground);
@@ -190,42 +190,44 @@ const styles = `
     .surfpack-navigator-input {
         flex: 1;
         padding: 4px 8px;
-        background-color: var(--surfpack-background);
         border: 1px solid var(--surfpack-border);
-        border-radius: 4px;
+        border-radius: 99px;
         font-size: 12px;
         font-family: monospace;
-        color: var(--surfpack-foreground);
         outline: none;
         transition: border-color 0.2s ease;
+        background: transparent;
+        color: var(--surfpack-muted-foreground);
+        background-color: var(--surfpack-background);
     }
     
     .surfpack-navigator-input:focus {
         border-color: var(--surfpack-accent);
+        background-color: var(--surfpack-background);
+        color: var(--surfpack-foreground);
     }
     
     .surfpack-navigator-refresh {
-        padding: 4px 8px;
-        border: 1px solid var(--surfpack-border);
-        border-radius: 4px;
-        background-color: var(--surfpack-background);
-        color: var(--surfpack-foreground);
+        all: unset;
         cursor: pointer;
-        font-size: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 32px;
         transition: background-color 0.2s ease;
     }
-    
+        
+    .surfpack-navigator-refresh {
+        color: var(--surfpack-muted-foreground);
+    }
+
     .surfpack-navigator-refresh:hover {
-        background-color: var(--surfpack-hover-background);
+        color: var(--surfpack-foreground-ultra);
+    }
+
+    .surfpack-navigator-refresh > * {
+        display: flex;
     }
     
-    .surfpack-navigator-refresh .icon svg {
-        color: var(--surfpack-foreground);
-    }
 
     .surfpack-debug-log {}
 `;
