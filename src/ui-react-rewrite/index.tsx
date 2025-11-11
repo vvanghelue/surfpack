@@ -2,10 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { AppShell } from "./components/AppShell";
 import type { RunnerFile } from "../index.js"; // existing export
-import type { UiOptions, UiComponent } from "../ui/ui.js"; // reuse existing types for parity
-import type { FileBrowser as LegacyFileBrowser } from "../ui/file-browser.js";
-import type { CodeEditor as LegacyCodeEditor } from "../ui/code-editor.js";
-import type { Navigator as LegacyNavigator } from "../ui/navigator.js";
+import type {
+  UiOptions,
+  UiComponent,
+  FileBrowserAdapter,
+  CodeEditorAdapter,
+  NavigatorAdapter,
+} from "./types.js";
 
 function toPathname(rawUrl: string) {
   if (!rawUrl || rawUrl === "about:blank") {
@@ -73,8 +76,8 @@ export function createUiReact(
 
   let previewContainer: HTMLDivElement | null = null;
   let uiComponent: UiComponent;
-  let codeEditorAdapter: LegacyCodeEditor | undefined;
-  let navigatorAdapter: LegacyNavigator | undefined;
+  let codeEditorAdapter: CodeEditorAdapter | undefined;
+  let navigatorAdapter: NavigatorAdapter | undefined;
 
   const providePreviewContainer = (el: HTMLDivElement) => {
     previewContainer = el;
@@ -153,8 +156,8 @@ export function createUiReact(
     }
   };
 
-  const fileBrowserAdapter = {
-    onFileSelect: undefined as ((file: RunnerFile) => void) | undefined,
+  const fileBrowserAdapter: FileBrowserAdapter = {
+    onFileSelect: undefined,
     setFiles(files: RunnerFile[]) {
       state.files = [...files];
       if (
@@ -179,7 +182,7 @@ export function createUiReact(
     destroy() {
       // No-op for now; React handles cleanup via destroy()
     },
-  } as unknown as LegacyFileBrowser;
+  };
 
   codeEditorAdapter = {
     loadFile(file: RunnerFile) {
@@ -215,7 +218,7 @@ export function createUiReact(
     destroy() {
       // React handles cleanup via uiComponent.destroy
     },
-  } as unknown as LegacyCodeEditor;
+  };
 
   navigatorAdapter = {
     setUrl(url: string) {
@@ -235,7 +238,7 @@ export function createUiReact(
       navigatorCallbacks.onRefresh = undefined;
       navigatorCallbacks.onNavigate = undefined;
     },
-  } as unknown as LegacyNavigator;
+  };
 
   uiComponent = {
     container: rootEl,
@@ -427,3 +430,5 @@ export const SurfpackUI = React.forwardRef<HTMLDivElement, SurfpackUIProps>(
 );
 
 export type { AppShellProps } from "./components/AppShell";
+
+export { createUiReact as createUi };

@@ -6,10 +6,10 @@ import React, {
   useState,
 } from "react";
 import type { RunnerFile } from "../../index.js";
-import type { UiOptions } from "../../ui/ui.js";
+import type { UiOptions } from "../types.js";
 // We will initially reuse CSS-in-TS from the existing UI to keep parity.
-import { applyUiStyles } from "../../ui/ui.style.css.js";
-import { applyCodeMirrorStyles } from "../../ui/codemirror.style.css.js";
+import { applyUiStyles } from "../styles/ui.style.css.js";
+import { applyCodeMirrorStyles } from "../styles/codemirror.style.css.js";
 import { FileBrowser } from "./FileBrowser/FileBrowser";
 import { CodeEditor } from "./CodeEditor/CodeEditor";
 import { Navigator as NavigatorBar } from "./Navigator/Navigator";

@@ -4,7 +4,7 @@ import type {
   PointerEvent as ReactPointerEvent,
   PointerEventHandler,
 } from "react";
-import { applyResizerStyles } from "../../ui/panel-resizer/panel-resizer.style.css.js";
+import { applyResizerStyles } from "../styles/panel-resizer.style.css.js";
 
 type UseHorizontalResizersOptions = {
   mainRef: MutableRefObject<HTMLDivElement | null>;

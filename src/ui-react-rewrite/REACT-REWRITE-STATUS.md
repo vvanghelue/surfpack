@@ -21,6 +21,31 @@ This file is the living status log and session journal for the React rewrite. It
 - Open questions/risks:
   - ...
 ```
+### 2025-11-11 - step 15 — Legacy stubs removed
+- Done:
+  - Deleted the remaining `src/ui/**` stub modules, including the resizer helpers and style re-exports, leaving React as the only shipped UI implementation.
+  - Updated `index.ts` to source `createUi` and UI types from `ui-react-rewrite`, re-exporting the adapters to preserve the public API.
+  - Dropped the deprecated `implementation` flag from `UiOptions` and the runner, removing the last legacy toggle.
+- Decisions:
+  - Retire the legacy `src/ui` import path; consumers should rely on the root exports or import directly from `ui-react-rewrite` if needed.
+- Next actions:
+  - Audit docs, samples, and downstream usage notes for references to the removed `src/ui` modules.
+- Open questions/risks:
+  - Some consumers may still reference deep `src/ui` paths; provide migration guidance if reports surface.
+
+
+### 2025-11-11 - step 14 — Legacy UI sunset
+
+- Done:
+  - Replaced `createUi` with the React adapter and downgraded the legacy DOM modules to stubs/type re-exports so build artifacts no longer ship the old implementation.
+  - Relocated shared CSS helpers into `ui-react-rewrite/styles` and updated hooks/components to rely on them.
+  - Simplified the dev playground to always boot the React UI and removed the implementation toggle.
+- Decisions:
+  - Keep thin stub modules (`src/ui/**`) that re-export React types/functions to preserve import stability while signalling the legacy API is deprecated.
+- Next actions:
+  - Run a bundle diff to confirm `lucide` and other legacy-only assets drop from the output.
+- Open questions/risks:
+  - External consumers importing legacy classes may now hit runtime throws; audit documentation to flag the breaking change before release.
 
 ### 2025-11-11 - step 12 — Preview container ready gate
 

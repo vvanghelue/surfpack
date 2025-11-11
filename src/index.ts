@@ -4,13 +4,23 @@ import {
   MessageToIframe,
   MessageLoadRoute,
 } from "./iframe-runner/iframe-messaging.js";
-import { createUi } from "./ui/ui.js";
-import { createUiReact } from "./ui-react-rewrite/index.js";
-import type { UiOptions, UiComponent } from "./ui/ui.js";
+import { createUi } from "./ui-react-rewrite/index.js";
+import type {
+  UiOptions,
+  UiComponent,
+} from "./ui-react-rewrite/types.js";
 
 export * from "./iframe-runner/iframe-runner.js";
 export * from "./standalone-runner/standalone-runner.js";
-export * from "./ui/ui.js";
+export * from "./ui-react-rewrite/index.js";
+export type {
+  UiTheme,
+  FileBrowserAdapter,
+  CodeEditorAdapter,
+  NavigatorAdapter,
+  UiOptions,
+  UiComponent,
+} from "./ui-react-rewrite/types.js";
 
 export interface RunnerFile {
   path: string;
@@ -112,19 +122,20 @@ export function init(options: InitOptions) {
   let iframeContainer: HTMLElement;
 
   if (options.ui) {
-    const implementation = options.ui.implementation ?? "legacy";
-    const uiFactory = implementation === "react" ? createUiReact : createUi;
-
-    ui = uiFactory(options.container, options.ui, (updatedFile) => {
-      // Handle file changes from the code editor
-      const fileIndex = currentFiles.findIndex(
-        (f) => f.path === updatedFile.path
-      );
-      if (fileIndex >= 0) {
-        currentFiles[fileIndex] = updatedFile;
-        sendFiles(currentFiles, currentEntryFile, "/");
+    ui = createUi(
+      options.container,
+      options.ui,
+      (updatedFile) => {
+        // Handle file changes from the code editor
+        const fileIndex = currentFiles.findIndex(
+          (f) => f.path === updatedFile.path
+        );
+        if (fileIndex >= 0) {
+          currentFiles[fileIndex] = updatedFile;
+          sendFiles(currentFiles, currentEntryFile, "/");
+        }
       }
-    });
+    );
 
     // Set up the initial files in the UI
     if (ui.fileBrowser) {
