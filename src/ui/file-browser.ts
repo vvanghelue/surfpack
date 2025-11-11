@@ -1,4 +1,5 @@
 import type { RunnerFile } from "../index.js";
+import { createIcon, getFileIcon, icons } from "./icons.js";
 
 interface FileTreeNode {
   [name: string]: FileTreeNode;
@@ -82,10 +83,19 @@ export class FileBrowser {
           event.stopPropagation();
           const collapsed = nested.style.display === "none";
           nested.style.display = collapsed ? "block" : "none";
-          const toggleIcon =
-            item.querySelector<HTMLSpanElement>(".toggle-icon");
-          if (toggleIcon) {
-            toggleIcon.textContent = collapsed ? "▼" : "▶";
+
+          // Update toggle icon
+          const toggleIconElement = item.querySelector(".toggle-icon");
+          if (toggleIconElement) {
+            toggleIconElement.innerHTML = "";
+            const newToggleIcon = createIcon(
+              collapsed ? icons.chevronDown : icons.chevronRight,
+              { className: "toggle-icon", title: "Toggle folder" }
+            );
+            const svgElement = newToggleIcon.querySelector("svg");
+            if (svgElement) {
+              toggleIconElement.appendChild(svgElement);
+            }
           }
         });
       }
@@ -100,13 +110,16 @@ export class FileBrowser {
     const item = document.createElement("div");
     item.className = "item folder-item";
 
-    const toggleIcon = document.createElement("span");
-    toggleIcon.className = "toggle-icon";
-    toggleIcon.textContent = "▼";
+    const toggleIcon = createIcon(icons.chevronDown, {
+      className: "toggle-icon",
+      size: 14,
+      title: "Toggle folder",
+    });
 
-    const folderIcon = document.createElement("span");
-    folderIcon.className = "folder-icon";
-    folderIcon.textContent = "📁";
+    const folderIcon = createIcon(icons.folder, {
+      className: "folder-icon",
+      size: 14,
+    });
 
     const label = document.createElement("span");
     label.className = "label";
@@ -121,9 +134,9 @@ export class FileBrowser {
     item.className = "item file-item";
     item.dataset.path = path;
 
-    const fileIcon = document.createElement("span");
-    fileIcon.className = "file-icon";
-    fileIcon.textContent = this.getFileIcon(name);
+    const fileIcon = createIcon(getFileIcon(name), {
+      className: "file-icon",
+    });
 
     const label = document.createElement("span");
     label.className = "label";
@@ -137,26 +150,6 @@ export class FileBrowser {
     });
 
     return item;
-  }
-
-  private getFileIcon(filename: string): string {
-    const ext = filename.split(".").pop()?.toLowerCase();
-    switch (ext) {
-      case "ts":
-      case "tsx":
-        return "📘";
-      case "js":
-      case "jsx":
-        return "📜";
-      case "css":
-        return "🎨";
-      case "html":
-        return "🌐";
-      case "json":
-        return "📋";
-      default:
-        return "📄";
-    }
   }
 
   selectFile(path: string): void {

@@ -15,10 +15,11 @@ const styles = `
         /* Light mode (default) */
         --surfpack-background: #ffffff;
         --surfpack-foreground: #333333;
+        --surfpack-foreground-ultra: #000000;
         --surfpack-muted-background: #f8f9fa;
         --surfpack-muted-foreground: #666666;
         --surfpack-border: #e9ecef;
-        --surfpack-accent: #007acc;
+        --surfpack-accent: #ffffff3e;
         --surfpack-hover-background: #e9ecef;
     }
     
@@ -27,10 +28,11 @@ const styles = `
         :root {
             --surfpack-background: #1e1e1e;
             --surfpack-foreground: #d4d4d4;
+            --surfpack-foreground-ultra: #ffffff;
             --surfpack-muted-background: #2d2d30;
             --surfpack-muted-foreground: #969696;
             --surfpack-border: #3e3e42;
-            --surfpack-accent: #0078d4;
+            --surfpack-accent: #ffffff3e;
             --surfpack-hover-background: #3e3e42;
         }
     }
@@ -39,10 +41,11 @@ const styles = `
     .surfpack-ui.dark-mode {
         --surfpack-background: #1e1e1e;
         --surfpack-foreground: #d4d4d4;
+        --surfpack-foreground-ultra: #ffffff;
         --surfpack-muted-background: #2d2d30;
         --surfpack-muted-foreground: #969696;
         --surfpack-border: #3e3e42;
-        --surfpack-accent: #0078d4;
+        --surfpack-accent: #ffffff3e;
         --surfpack-hover-background: #3e3e42;
     }
     
@@ -50,10 +53,11 @@ const styles = `
     .surfpack-ui.light-mode {
         --surfpack-background: #ffffff;
         --surfpack-foreground: #333333;
+        --surfpack-foreground-ultra: #000000;
         --surfpack-muted-background: #f8f9fa;
         --surfpack-muted-foreground: #666666;
         --surfpack-border: #e9ecef;
-        --surfpack-accent: #007acc;
+        --surfpack-accent: #0000003e;
         --surfpack-hover-background: #e9ecef;
     }
 
@@ -82,8 +86,9 @@ const styles = `
         width: 250px;
         height: 100%;
         overflow: auto;
+        font-size: 12px;
     }
-    .surfpack-file-browser .file-browser {
+    .surfpack-file-browser.file-browser {
         height: 100%;
         overflow-y: auto;
         padding: 8px;
@@ -97,6 +102,7 @@ const styles = `
         list-style: none;
         padding: 0;
         margin: 0;
+        user-select: none;
     }
     .surfpack-file-browser .file-tree li {
         margin: 2px 0;
@@ -117,15 +123,27 @@ const styles = `
     }
     .surfpack-file-browser .file-item.active {
         background-color: var(--surfpack-accent) !important;
-        color: white !important;
+        color: var(--surfpack-foreground-ultra) !important;
     }
-    .surfpack-file-browser .toggle-icon {
-        margin-right: 4px;
-        font-size: 12px;
-    }
+    .surfpack-file-browser .toggle-icon,
     .surfpack-file-browser .file-icon,
     .surfpack-file-browser .folder-icon {
         margin-right: 6px;
+        display: flex;
+        align-items: center;
+    }
+    .surfpack-file-browser .toggle-icon {
+        margin-right: 4px;
+    }
+    .surfpack-file-browser .icon svg {
+        color: var(--surfpack-muted-foreground);
+        transition: color 0.2s ease;
+    }
+    .surfpack-file-browser .item:hover .icon svg {
+        color: var(--surfpack-foreground);
+    }
+    .surfpack-file-browser .file-item.active .icon svg {
+        color: var(--surfpack-foreground-ultra) !important;
     }
 
     /* Code Editor Styles */
@@ -194,10 +212,19 @@ const styles = `
         color: var(--surfpack-foreground);
         cursor: pointer;
         font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        transition: background-color 0.2s ease;
     }
     
     .surfpack-navigator-refresh:hover {
         background-color: var(--surfpack-hover-background);
+    }
+    
+    .surfpack-navigator-refresh .icon svg {
+        color: var(--surfpack-foreground);
     }
 
     .surfpack-debug-log {}

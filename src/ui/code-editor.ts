@@ -62,7 +62,7 @@ export class CodeEditor {
           },
           ".cm-scroller": {
             fontFamily: "Monaco, Menlo, 'Ubuntu Mono', monospace",
-            fontSize: "14px",
+            fontSize: "12px",
           },
         }),
       ],

@@ -27,7 +27,8 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.4",
     "@uiw/codemirror-theme-vscode": "^4.25.3",
-    "codemirror": "^6.0.2"
+    "codemirror": "^6.0.2",
+    "lucide": "^0.553.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

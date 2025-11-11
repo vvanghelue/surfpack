@@ -1,3 +1,5 @@
+import { createIcon, icons } from "./icons.js";
+
 export class Navigator {
   private container: HTMLElement;
   private urlInput: HTMLInputElement;
@@ -28,8 +30,11 @@ export class Navigator {
 
     // Refresh button
     this.refreshButton.className = "surfpack-navigator-refresh";
-    this.refreshButton.textContent = "⟳";
-    this.refreshButton.title = "Refresh";
+    const refreshIcon = createIcon(icons.refresh, {
+      size: 16,
+      title: "Refresh",
+    });
+    this.refreshButton.appendChild(refreshIcon);
 
     this.container.appendChild(this.urlInput);
     this.container.appendChild(this.refreshButton);
