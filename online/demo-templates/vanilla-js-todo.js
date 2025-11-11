@@ -447,5 +447,4 @@ const app = new TodoApp();
 window.app = app;`,
     },
   ],
-  entryFile: "index.html",
 };
