@@ -5,15 +5,21 @@ interface FileTreeNode {
   [name: string]: FileTreeNode;
 }
 
+type FileBrowserOptions = {
+  defaultExpanded?: boolean;
+};
+
 export class FileBrowser {
   private container: HTMLElement;
   private files: RunnerFile[] = [];
   private activePath: string | null = null;
+  private defaultExpanded: boolean = true;
   public onFileSelect?: (file: RunnerFile) => void;
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, options: FileBrowserOptions = {}) {
     this.container = container;
     this.container.classList.add("file-browser");
+    this.defaultExpanded = options.defaultExpanded ?? true;
   }
 
   setFiles(files: RunnerFile[]): void {
@@ -73,9 +79,13 @@ export class FileBrowser {
         const item = this.createFileItem(name, fullPath);
         li.appendChild(item);
       } else {
-        const item = this.createFolderItem(name);
+        const item = this.createFolderItem(name, this.defaultExpanded);
         const nested = this.renderTree(children, fullPath);
         nested.classList.add("nested");
+        // Apply default expanded/collapsed state
+        if (!this.defaultExpanded) {
+          nested.style.display = "none";
+        }
         li.classList.add("folder-node");
         li.append(item, nested);
 
@@ -106,14 +116,17 @@ export class FileBrowser {
     return ul;
   }
 
-  private createFolderItem(name: string): HTMLDivElement {
+  private createFolderItem(name: string, expanded: boolean): HTMLDivElement {
     const item = document.createElement("div");
     item.className = "item folder-item";
 
-    const toggleIcon = createIcon(icons.chevronDown, {
-      className: "toggle-icon",
-      title: "Toggle folder",
-    });
+    const toggleIcon = createIcon(
+      expanded ? icons.chevronDown : icons.chevronRight,
+      {
+        className: "toggle-icon",
+        title: "Toggle folder",
+      }
+    );
 
     const folderIcon = createIcon(icons.folder, {
       className: "folder-icon",

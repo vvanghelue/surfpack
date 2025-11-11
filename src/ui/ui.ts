@@ -14,6 +14,7 @@ export type UiOptions = {
   showFileBrowser?: boolean;
   showNavigator?: boolean;
   codeEditorInitialWidth?: number;
+  fileBrowserDefaultExpanded?: boolean;
   debounceDelay?: number; // Default: 700ms - delay for code editor changes
   // showDebugLogMessages?: boolean; // not implemented yet
 };
@@ -53,6 +54,7 @@ export function createUi(
     showFileBrowser = true,
     showNavigator = true,
     codeEditorInitialWidth = undefined,
+    fileBrowserDefaultExpanded = true,
     debounceDelay = 700,
   } = options;
 
@@ -76,7 +78,9 @@ export function createUi(
     fileBrowserContainer.className = "surfpack-file-browser";
     mainContainer.appendChild(fileBrowserContainer);
 
-    fileBrowser = new FileBrowser(fileBrowserContainer);
+    fileBrowser = new FileBrowser(fileBrowserContainer, {
+      defaultExpanded: fileBrowserDefaultExpanded,
+    });
   }
 
   // Code editor
