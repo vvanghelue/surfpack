@@ -5,10 +5,7 @@ import {
   MessageLoadRoute,
 } from "./iframe-runner/iframe-messaging.js";
 import { createUi } from "./ui-react-rewrite/index.js";
-import type {
-  UiOptions,
-  UiComponent,
-} from "./ui-react-rewrite/types.js";
+import type { UiOptions, UiComponent } from "./ui-react-rewrite/types.js";
 
 export * from "./iframe-runner/iframe-runner.js";
 export * from "./standalone-runner/standalone-runner.js";
@@ -122,20 +119,16 @@ export function init(options: InitOptions) {
   let iframeContainer: HTMLElement;
 
   if (options.ui) {
-    ui = createUi(
-      options.container,
-      options.ui,
-      (updatedFile) => {
-        // Handle file changes from the code editor
-        const fileIndex = currentFiles.findIndex(
-          (f) => f.path === updatedFile.path
-        );
-        if (fileIndex >= 0) {
-          currentFiles[fileIndex] = updatedFile;
-          sendFiles(currentFiles, currentEntryFile, "/");
-        }
+    ui = createUi(options.container, options.ui, (updatedFile) => {
+      // Handle file changes from the code editor
+      const fileIndex = currentFiles.findIndex(
+        (f) => f.path === updatedFile.path
+      );
+      if (fileIndex >= 0) {
+        currentFiles[fileIndex] = updatedFile;
+        sendFiles(currentFiles, currentEntryFile, "/");
       }
-    );
+    });
 
     // Set up the initial files in the UI
     if (ui.fileBrowser) {

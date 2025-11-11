@@ -21,7 +21,9 @@ This file is the living status log and session journal for the React rewrite. It
 - Open questions/risks:
   - ...
 ```
+
 ### 2025-11-11 - step 15 — Legacy stubs removed
+
 - Done:
   - Deleted the remaining `src/ui/**` stub modules, including the resizer helpers and style re-exports, leaving React as the only shipped UI implementation.
   - Updated `index.ts` to source `createUi` and UI types from `ui-react-rewrite`, re-exporting the adapters to preserve the public API.
@@ -32,7 +34,6 @@ This file is the living status log and session journal for the React rewrite. It
   - Audit docs, samples, and downstream usage notes for references to the removed `src/ui` modules.
 - Open questions/risks:
   - Some consumers may still reference deep `src/ui` paths; provide migration guidance if reports surface.
-
 
 ### 2025-11-11 - step 14 — Legacy UI sunset
 
