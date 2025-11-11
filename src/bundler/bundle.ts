@@ -137,6 +137,10 @@ export const buildBundle = async (
     fileMap.set(normalizePath(file.path), file.content);
   }
 
+  if (entry && entry.endsWith(".html")) {
+    throw new Error(".html files are not supported as entry files");
+  }
+
   if (!entry) {
     if (fileMap.has("package.json")) {
       entry =

@@ -451,5 +451,4 @@ document.addEventListener('keydown', (e) => {
 });`,
     },
   ],
-  entryFile: "index.html",
 };
