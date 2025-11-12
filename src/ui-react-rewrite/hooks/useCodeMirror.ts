@@ -127,10 +127,9 @@ export function useCodeMirror({
           "&": { height: "100%" },
           ".cm-editor": { height: "100%" },
           ".cm-scroller": {
-            fontFamily: "monospace",
+            fontFamily: "var(--surfpack-font-family-mono) !important",
             fontSize: "12px",
             fontWeight: "400",
-            letterSpacing: "0px",
           },
         }),
       ],

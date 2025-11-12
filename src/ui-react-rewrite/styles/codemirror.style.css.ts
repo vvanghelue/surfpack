@@ -1,5 +1,4 @@
 const styles = `
-
   .surfpack-code-editor .cm-gutterElement {
     box-sizing: border-box;
     font-size: 8px;
