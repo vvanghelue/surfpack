@@ -44,9 +44,19 @@ export function useCodeMirror({
   const viewRef = useRef<EditorView | null>(null);
   const themeCompartmentRef = useRef(new Compartment());
   const currentFileRef = useRef<RunnerFile | null>(null);
+  const latestThemeRef = useRef(theme);
+  const latestFileRef = useRef(file);
   const isLoadingRef = useRef(false);
   const changeTimeoutRef = useRef<number | null>(null);
   const scheduleChangeRef = useRef<(file: RunnerFile) => void>(() => {});
+
+  useEffect(() => {
+    latestThemeRef.current = theme;
+  }, [theme]);
+
+  useEffect(() => {
+    latestFileRef.current = file;
+  }, [file]);
 
   useEffect(() => {
     scheduleChangeRef.current = (updatedFile: RunnerFile) => {
@@ -80,11 +90,12 @@ export function useCodeMirror({
       return;
     }
 
-    const initialTheme = resolveTheme(theme);
+    const initialTheme = resolveTheme(latestThemeRef.current);
+    const initialFile = latestFileRef.current;
 
     const view = new EditorView({
       parent: container,
-      doc: file?.content ?? "",
+      doc: initialFile?.content ?? "",
       extensions: [
         basicSetup,
         javascript({ jsx: true, typescript: true }),
@@ -116,22 +127,28 @@ export function useCodeMirror({
           "&": { height: "100%" },
           ".cm-editor": { height: "100%" },
           ".cm-scroller": {
-            fontFamily: "Monaco, Menlo, 'Ubuntu Mono', monospace",
+            fontFamily: "monospace",
             fontSize: "12px",
+            fontWeight: "400",
+            letterSpacing: "0px",
           },
         }),
       ],
     });
 
     viewRef.current = view;
-    currentFileRef.current = file ?? null;
+    currentFileRef.current = initialFile ?? null;
+  }, [containerRef]);
 
+  useEffect(() => {
     return () => {
-      view.destroy();
-      viewRef.current = null;
-      currentFileRef.current = null;
+      if (viewRef.current) {
+        viewRef.current.destroy();
+        viewRef.current = null;
+        currentFileRef.current = null;
+      }
     };
-  }, [containerRef, file, theme]);
+  }, []);
 
   useEffect(() => {
     const view = viewRef.current;

@@ -29,18 +29,18 @@
     "@uiw/codemirror-theme-vscode": "^4.25.3",
     "codemirror": "^6.0.2",
     "lucide": "^0.553.0",
+    "lucide-react": "^0.553.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "lucide-react": "^0.553.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
     "concurrently": "^8.2.2",
     "esbuild": "^0.26.0",
     "rimraf": "^5.0.1",
     "rolldown": "^1.0.0-beta.48",
     "serve": "^14.2.0",
-    "typescript": "^5.6.3",
-    "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.19"
+    "typescript": "^5.6.3"
   }
 }

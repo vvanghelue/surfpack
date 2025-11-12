@@ -74,6 +74,8 @@ const styles = `
         display: flex;
         background-color: var(--surfpack-background);
         color: var(--surfpack-foreground);
+        -webkit-font-smoothing: antialiased;
+        font-smoothing: antialiased;
     }
     .surfpack-ui * {
         box-sizing: border-box;
