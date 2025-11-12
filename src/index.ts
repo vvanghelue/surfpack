@@ -19,6 +19,9 @@ export type {
   UiComponent,
 } from "./ui-react-rewrite/types.js";
 
+const DEFAULT_BUNDLER_URL =
+  "https://vvanghelue.github.io/surfpack/online/online-bundler.html";
+
 export interface RunnerFile {
   path: string;
   content: string;
@@ -163,11 +166,7 @@ export function init(options: InitOptions) {
           iframe = createIframe();
           iframeContainer.appendChild(iframe);
 
-          const defaultBundlerUrl =
-            location.hostname === "localhost"
-              ? "dev-bundler.html"
-              : "https://vvanghelue.github.io/surfpack/online/online-bundler.html";
-          iframe.src = options.bundlerUrl || defaultBundlerUrl;
+          iframe.src = options.bundlerUrl || DEFAULT_BUNDLER_URL;
           isIframeReady = false;
         }
       });
@@ -285,7 +284,7 @@ export function init(options: InitOptions) {
   // Create and setup iframe
   iframe = createIframe();
   mountIframeWithRetry();
-  iframe.src = options.bundlerUrl || "dev-bundler.html";
+  iframe.src = options.bundlerUrl || DEFAULT_BUNDLER_URL;
 
   return {
     destroy() {
