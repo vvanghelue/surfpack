@@ -4,12 +4,12 @@ import {
   MessageToIframe,
   MessageLoadRoute,
 } from "./iframe-runner/iframe-messaging.js";
-import { createUi } from "./ui-react-rewrite/index.js";
+import { createUi } from "./ui-react-rewrite/ui.js";
 import type { UiOptions, UiComponent } from "./ui-react-rewrite/types.js";
 
 export * from "./iframe-runner/iframe-runner.js";
 export * from "./standalone-runner/standalone-runner.js";
-export * from "./ui-react-rewrite/index.js";
+export * from "./ui-react-rewrite/ui.js";
 export type {
   UiTheme,
   FileBrowserAdapter,
