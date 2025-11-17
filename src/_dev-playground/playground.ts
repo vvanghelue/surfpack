@@ -13,9 +13,9 @@ type Template = {
 
 // Available templates
 const templates: Record<string, Template> = {
+  "react-router": reactRouterApp,
   "react-template": reactApp,
   "react-runtime-error": reactRuntimeErrorApp,
-  "react-router": reactRouterApp,
   "vanilla-js-todo": vanillaJsTodoApp,
 };
 
@@ -25,7 +25,7 @@ let {
 }: {
   files: { path: string; content: string }[];
   entryFile?: string;
-} = reactApp;
+} = reactRouterApp;
 
 const rootEl = document.querySelector("#root") as HTMLElement;
 
@@ -180,31 +180,28 @@ const uiContainer = document.createElement("div");
 // uiContainer.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
 rootEl.appendChild(uiContainer);
 
-// Initialize the runner with UI
-let surfpack = init({
-  bundlerUrl: "./playground-iframe.html",
-  container: uiContainer,
-  files: files as RunnerFile[],
-  entryFile: entryFile,
-  debugMode: true,
-  ui: {
-    theme: "dark",
+function createRunner() {
+  return init({
+    bundlerUrl: "./playground-iframe.html",
+    container: uiContainer,
+    files: files as RunnerFile[],
+    entryFile: entryFile,
+    activeFilePath: entryFile,
+
+    theme: themeSelect.value as "light" | "dark" | "device-settings",
     width: "100%",
     height: 800,
-    showCodeEditor: true,
-    showFileBrowser: true,
-    showNavigator: true,
-  },
-  onBundleComplete: (result: { fileCount: number; warnings?: string[] }) => {
-    console.log("Bundle completed:", result);
-  },
-  onBundleError: (error: string) => {
-    console.error("Bundle error:", error);
-  },
-  onIframeReady: () => {
-    console.log("Iframe is ready");
-  },
-});
+    showCodeEditor: checkboxes.showCodeEditor.checked,
+    showFileBrowser: checkboxes.showFileBrowser.checked,
+    showNavigator: checkboxes.showNavigator.checked,
+
+    onIframeReady: () => {
+      console.log("Iframe is ready");
+    },
+  });
+}
+
+let surfpack = createRunner();
 
 // Function to switch templates
 function switchTemplate(templateKey: string) {
@@ -220,8 +217,8 @@ function switchTemplate(templateKey: string) {
 
 // Function to switch theme
 function switchTheme(theme: "light" | "dark" | "device-settings") {
-  if (surfpack.ui) {
-    surfpack.ui.setTheme(theme);
+  if (surfpack) {
+    surfpack.setTheme(theme);
   }
 }
 
@@ -253,17 +250,17 @@ function toggleUIComponent(
   component: "showCodeEditor" | "showFileBrowser" | "showNavigator",
   show: boolean
 ) {
-  if (!surfpack.ui) return;
+  if (!surfpack) return;
 
   switch (component) {
     case "showCodeEditor":
-      surfpack.ui.toggleCodeEditor(show);
+      surfpack.toggleCodeEditor(show);
       break;
     case "showFileBrowser":
-      surfpack.ui.toggleFileBrowser(show);
+      surfpack.toggleFileBrowser(show);
       break;
     case "showNavigator":
-      surfpack.ui.toggleNavigator(show);
+      surfpack.toggleNavigator(show);
       break;
   }
 }

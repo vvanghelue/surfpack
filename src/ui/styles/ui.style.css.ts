@@ -10,6 +10,15 @@
  *      - Bottom overlay (150px height) with debug log messages (optional)
  */
 const styles = `
+    /*
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Sono:wght@400&display=swap');
+    
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap');
+    */
+
     /* CSS Variables for Dark Mode */
     :root {
         /* Light mode (default) */
@@ -21,6 +30,12 @@ const styles = `
         --surfpack-border: #e9ecef;
         --surfpack-accent: #ffffff3e;
         --surfpack-hover-background: #e9ecef;
+
+        /* --surfpack-font-family: 'Open Sans', Arial, sans-serif; */
+        /* --surfpack-font-family-mono: 'Roboto Mono', monospace; */
+
+        --surfpack-font-family: inherit; /** Use inherited font family from the page **/
+        --surfpack-font-family-mono: monospace;  /** Use default monospace for user **/
     }
     
     /* Dark mode */
@@ -62,18 +77,21 @@ const styles = `
     }
 
     .surfpack-ui {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        __font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        font-family: var(--surfpack-font-family);
         font-size: 14px;
         line-height: 1.5;
         box-sizing: border-box;
         display: flex;
         border: 1px solid var(--surfpack-border);
-        border-radius: 4px;
+        border-radius: 12px;
         __box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         display: flex;
         background-color: var(--surfpack-background);
         color: var(--surfpack-foreground);
+        -webkit-font-smoothing: antialiased;
+        font-smoothing: antialiased;
     }
     .surfpack-ui * {
         box-sizing: border-box;
@@ -92,6 +110,7 @@ const styles = `
     }
     .surfpack-file-browser.file-browser {
         height: 100%;
+        width: 100%;
         overflow-y: auto;
         padding: 8px;
         background-color: var(--surfpack-muted-background);
@@ -183,9 +202,6 @@ const styles = `
         flex: 1;
         position: relative;
         overflow: hidden;
-        height: 100%;
-    }
-    .surfpack-iframe-bundler-iframe iframe {
         width: 100%;
         height: 100%;
         border: none;

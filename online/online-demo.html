@@ -98,6 +98,7 @@
             <option value="react-basic">React Counter App</option>
             <option value="react-todo">React Todo App</option>
             <option value="react-weather">React Weather Dashboard</option>
+            <option value="react-router">React Router Demo</option>
             <option value="vanilla-todo">Vanilla JS Todo App</option>
             <option value="calculator">Calculator App</option>
           </select>
@@ -132,6 +133,7 @@
 
     <script type="module">
       import { init } from "https://esm.sh/surfpack@latest";
+      // import { init } from "../dist/index.js";
 
       let demoTemplates;
       let surfpack;
@@ -150,8 +152,14 @@
 
       // Only proceed if templates loaded successfully
       if (demoTemplates) {
+        const container = document.getElementById("surfpack-container");
+        const codeEditorCheckbox = document.getElementById("show-code-editor");
+        const fileBrowserCheckbox =
+          document.getElementById("show-file-browser");
+        const navigatorCheckbox = document.getElementById("show-navigator");
+        const themeSelect = document.getElementById("theme-select");
+
         const initSurfpack = () => {
-          const container = document.getElementById("surfpack-container");
           const template = demoTemplates[currentTemplate];
 
           console.log(`Initializing template: ${currentTemplate}`, template);
@@ -168,17 +176,16 @@
               container: container,
               files: template.files,
               entryFile: template.entryFile,
+              activeFilePath: template.entryFile,
               debugMode: true,
-              ui: {
-                theme: document.getElementById("theme-select").value || "dark",
-                width: "100%",
-                height: 600,
-                showCodeEditor: true,
-                showFileBrowser: true,
-                showNavigator: true,
-              },
-              onBundleComplete: (result) => {
-                console.log("Bundle completed:", result);
+              theme: themeSelect.value,
+              width: "100%",
+              height: 630,
+              showCodeEditor: codeEditorCheckbox.checked,
+              showFileBrowser: fileBrowserCheckbox.checked,
+              showNavigator: navigatorCheckbox.checked,
+              onBundleComplete: () => {
+                console.log("Bundle completed");
               },
               onBundleError: (error) => {
                 console.error("Bundle error:", error);
@@ -197,52 +204,35 @@
         const templateSelect = document.getElementById("template-select");
         templateSelect.addEventListener("change", (e) => {
           currentTemplate = e.target.value;
-          const container = document.getElementById("surfpack-container");
+          const template = demoTemplates[currentTemplate];
 
-          console.log(`Switching to template: ${currentTemplate}`);
-
-          // Destroy previous instance if it exists
-          if (surfpack && surfpack.destroy) {
-            surfpack.destroy();
+          if (template && surfpack) {
+            console.log(`Switching to template: ${currentTemplate}`);
+            surfpack.updateFiles(template.files, template.entryFile);
           }
-
-          // Clear the container
-          container.innerHTML = "";
-
-          // Small delay to ensure cleanup is complete
-          setTimeout(() => {
-            initSurfpack();
-          }, 100);
         });
 
         // Theme switcher
-        const themeSelect = document.getElementById("theme-select");
         themeSelect.addEventListener("change", (e) => {
           const theme = e.target.value;
-          if (surfpack && surfpack.ui) {
-            surfpack.ui.setTheme(theme);
+          if (surfpack) {
+            surfpack.setTheme(theme);
           }
         });
 
-        // UI Controls functionality
-        const codeEditorCheckbox = document.getElementById("show-code-editor");
-        const fileBrowserCheckbox =
-          document.getElementById("show-file-browser");
-        const navigatorCheckbox = document.getElementById("show-navigator");
-
         // Function to toggle UI components
         function toggleUIComponent(component, show) {
-          if (!surfpack.ui) return;
+          if (!surfpack) return;
 
           switch (component) {
             case "showCodeEditor":
-              surfpack.ui.toggleCodeEditor(show);
+              surfpack.toggleCodeEditor(show);
               break;
             case "showFileBrowser":
-              surfpack.ui.toggleFileBrowser(show);
+              surfpack.toggleFileBrowser(show);
               break;
             case "showNavigator":
-              surfpack.ui.toggleNavigator(show);
+              surfpack.toggleNavigator(show);
               break;
           }
         }

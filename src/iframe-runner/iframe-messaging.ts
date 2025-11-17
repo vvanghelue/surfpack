@@ -31,7 +31,7 @@ export type MessageFilesUpdate = {
   payload: {
     files: RunnerSourceFile[];
     entry?: string;
-    initialRoute?: string;
+    initialRouteState?: string;
   };
 };
 export type MessageLoadRoute = {

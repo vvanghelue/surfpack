@@ -15,8 +15,6 @@ import {
   initializeRoutingState,
 } from "./routing-history-state.js";
 
-let pendingInitialRoute: string | null = null;
-
 const isFilesUpdateMessage = (data: unknown) => {
   if (typeof data !== "object" || data === null) {
     return false;
@@ -37,11 +35,6 @@ const handleFilesUpdate = async (
   rawPayload: MessageFilesUpdate["payload"]
 ): Promise<void> => {
   const files = sanitizeFiles(rawPayload?.files);
-
-  // Store initial route if provided
-  if (rawPayload?.initialRoute) {
-    pendingInitialRoute = rawPayload.initialRoute;
-  }
 
   const entry = rawPayload?.entry;
   const token = ++buildCounter;
@@ -78,10 +71,7 @@ const handleFilesUpdate = async (
       type: "build-result-ack",
       payload: { fileCount: files.length, success: true },
     });
-
-    // Initialize routing state management after successful bundle
-    initializeRoutingState(pendingInitialRoute || "/");
-    pendingInitialRoute = null;
+    initializeRoutingState(rawPayload.initialRouteState);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const stack = error instanceof Error ? error.stack || "" : "";

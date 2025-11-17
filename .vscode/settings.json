@@ -17,12 +17,8 @@
     },
     "github.copilot.nextEditSuggestions.enabled": true,
     "chat.tools.terminal.autoApprove": {
-        "mv": true,
-        "npm create": true,
-        "npm install": true,
-        "npx": true,
-        "git status": true,
-        "git commit": true
+        "*": true
     },
-    "chat.agent.maxRequests": 50
+    "chat.agent.maxRequests": 300,
+    "chat.tools.terminal.enableAutoApprove": true,
 }
