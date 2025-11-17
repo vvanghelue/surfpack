@@ -19,6 +19,14 @@ import {
   extractCssLoadedInHtml,
   extractFileEntryFromHtml,
 } from "./extract-html.js";
+
+declare global {
+  interface Window {
+    __surfpackBundledCode?: string;
+    __surfpackSourceFiles?: ReadonlyArray<RunnerSourceFile>;
+  }
+}
+
 export interface BundleOutput {
   code: string;
   css: string[];
@@ -226,6 +234,10 @@ export const runBundle = async (
   files: ReadonlyArray<RunnerSourceFile>
 ): Promise<void> => {
   clearErrorOverlay();
+
+  // Store bundled code and source files globally for error handler
+  window.__surfpackBundledCode = bundleCode;
+  window.__surfpackSourceFiles = files;
 
   // more heuristics for practicality
   document.body.innerHTML = `

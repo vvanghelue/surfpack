@@ -1,5 +1,8 @@
 import { CompilationError } from "../bundle.js";
+import type { RunnerSourceFile } from "../source-file.js";
 import { renderOverlay } from "./error-overlay.js";
+import { decodeStackTrace } from "./sourcemap-decoder.js";
+import { createCodePreview, renderCodePreviewHtml } from "./code-preview.js";
 
 const OVERLAY_TITLE = "Runtime Error";
 
@@ -11,6 +14,8 @@ interface NormalizedError {
 declare global {
   interface Window {
     __surfpackErrorHandlerInstalled?: boolean;
+    __surfpackBundledCode?: string;
+    __surfpackSourceFiles?: ReadonlyArray<RunnerSourceFile>;
   }
 }
 
@@ -76,11 +81,11 @@ const isNetworkOrResourceError = (
   return false;
 };
 
-const handleRuntimeError = (
+const handleRuntimeError = async (
   value: unknown,
   origin?: string,
   event?: ErrorEvent
-): void => {
+): Promise<void> => {
   // Filter out network/resource loading errors
   if (isNetworkOrResourceError(value, event)) {
     console.warn("Network/Resource error (ignored by error overlay):", value);
@@ -89,15 +94,48 @@ const handleRuntimeError = (
 
   console.error(value);
   const { message, stack } = normalizeError(value);
+
+  // Try to decode source map and create code preview
+  let codePreviewHtml: string | undefined;
+  if (window.__surfpackBundledCode && window.__surfpackSourceFiles && stack) {
+    try {
+      const frames = await decodeStackTrace(
+        stack,
+        window.__surfpackBundledCode
+      );
+      if (frames.length > 0) {
+        const firstFrame = frames[0];
+        if (
+          firstFrame.original.source &&
+          firstFrame.original.line &&
+          firstFrame.original.column !== null
+        ) {
+          const preview = createCodePreview(
+            firstFrame.original.source,
+            firstFrame.original.line,
+            firstFrame.original.column,
+            window.__surfpackSourceFiles,
+            5
+          );
+          if (preview) {
+            codePreviewHtml = renderCodePreviewHtml(preview);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to decode source map:", error);
+    }
+  }
+
   if (value instanceof CompilationError) {
     const title = origin
       ? `Compilation Error (${origin})`
       : "Compilation Error";
-    renderOverlay(title, message, stack);
+    renderOverlay(title, message, stack, codePreviewHtml);
     return;
   }
   const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
-  renderOverlay(title, message, stack);
+  renderOverlay(title, message, stack, codePreviewHtml);
 };
 
 export const installGlobalErrorHandler = (): void => {
@@ -114,7 +152,7 @@ export const installGlobalErrorHandler = (): void => {
       }
       event.preventDefault();
       const error = event.error || new Error(event.message || "Unknown error");
-      handleRuntimeError(error, "error", event);
+      void handleRuntimeError(error, "error", event);
     },
     true
   );
@@ -126,12 +164,12 @@ export const installGlobalErrorHandler = (): void => {
         return;
       }
       event.preventDefault();
-      handleRuntimeError(event.reason, "unhandledrejection");
+      void handleRuntimeError(event.reason, "unhandledrejection");
     },
     true
   );
 };
 
 export const showErrorOverlay = (error: unknown): void => {
-  handleRuntimeError(error);
+  void handleRuntimeError(error);
 };
