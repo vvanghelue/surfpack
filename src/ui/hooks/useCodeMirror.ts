@@ -10,7 +10,7 @@ import type { RunnerFile } from "../../index.js";
 
 export type UseCodeMirrorOptions = {
   containerRef: MutableRefObject<HTMLDivElement | null>;
-  file: RunnerFile | null;
+  file?: RunnerFile;
   theme: "light" | "dark" | "device-settings";
   debounceDelay: number;
   onChange?: (file: RunnerFile) => void;

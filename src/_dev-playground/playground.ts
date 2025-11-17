@@ -13,9 +13,9 @@ type Template = {
 
 // Available templates
 const templates: Record<string, Template> = {
+  "react-router": reactRouterApp,
   "react-template": reactApp,
   "react-runtime-error": reactRuntimeErrorApp,
-  "react-router": reactRouterApp,
   "vanilla-js-todo": vanillaJsTodoApp,
 };
 
@@ -25,7 +25,7 @@ let {
 }: {
   files: { path: string; content: string }[];
   entryFile?: string;
-} = reactApp;
+} = reactRouterApp;
 
 const rootEl = document.querySelector("#root") as HTMLElement;
 
@@ -186,17 +186,18 @@ function createRunner() {
     container: uiContainer,
     files: files as RunnerFile[],
     entryFile: entryFile,
+    activeFilePath: entryFile,
     debugMode: true,
-    ui: {
-      theme: themeSelect.value as "light" | "dark" | "device-settings",
-      width: "100%",
-      height: 800,
-      showCodeEditor: checkboxes.showCodeEditor.checked,
-      showFileBrowser: checkboxes.showFileBrowser.checked,
-      showNavigator: checkboxes.showNavigator.checked,
-    },
-    onBundleComplete: (result: { fileCount: number; warnings?: string[] }) => {
-      console.log("Bundle completed:", result);
+
+    theme: themeSelect.value as "light" | "dark" | "device-settings",
+    width: "100%",
+    height: 800,
+    showCodeEditor: checkboxes.showCodeEditor.checked,
+    showFileBrowser: checkboxes.showFileBrowser.checked,
+    showNavigator: checkboxes.showNavigator.checked,
+
+    onBundleComplete: () => {
+      console.log("Bundle completed");
     },
     onBundleError: (error: string) => {
       console.error("Bundle error:", error);
@@ -223,8 +224,8 @@ function switchTemplate(templateKey: string) {
 
 // Function to switch theme
 function switchTheme(theme: "light" | "dark" | "device-settings") {
-  if (surfpack.ui) {
-    surfpack.ui.setTheme(theme);
+  if (surfpack) {
+    surfpack.setTheme(theme);
   }
 }
 
@@ -256,17 +257,17 @@ function toggleUIComponent(
   component: "showCodeEditor" | "showFileBrowser" | "showNavigator",
   show: boolean
 ) {
-  if (!surfpack.ui) return;
+  if (!surfpack) return;
 
   switch (component) {
     case "showCodeEditor":
-      surfpack.ui.toggleCodeEditor(show);
+      surfpack.toggleCodeEditor(show);
       break;
     case "showFileBrowser":
-      surfpack.ui.toggleFileBrowser(show);
+      surfpack.toggleFileBrowser(show);
       break;
     case "showNavigator":
-      surfpack.ui.toggleNavigator(show);
+      surfpack.toggleNavigator(show);
       break;
   }
 }

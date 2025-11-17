@@ -6,20 +6,32 @@ import React, {
   useState,
 } from "react";
 import type { RunnerFile } from "../../index.js";
-import type { UiOptions } from "../types.js";
-// We will initially reuse CSS-in-TS from the existing UI to keep parity.
+import type { UiOptions, UiTheme } from "../types.js";
 import { applyUiStyles } from "../styles/ui.style.css.js";
 import { applyCodeMirrorStyles } from "../styles/codemirror.style.css.js";
-import { FileBrowser } from "./FileBrowser/FileBrowser";
-import { CodeEditor } from "./CodeEditor/CodeEditor";
-import { Navigator as NavigatorBar } from "./Navigator/Navigator";
-import { Preview } from "./Preview/Preview";
-import { ResizeHandle } from "./Resizer/ResizeHandle";
-import { useHorizontalResizers } from "../hooks/useHorizontalResizers";
+import { FileBrowser } from "./FileBrowser/FileBrowser.js";
+import { CodeEditor } from "./CodeEditor/CodeEditor.js";
+import { Preview } from "./Preview/Preview.js";
+import { ResizeHandle } from "./Resizer/ResizeHandle.js";
+import { useHorizontalResizers } from "../hooks/useHorizontalResizers.js";
 
-export type AppShellProps = UiOptions & {
-  files?: RunnerFile[];
+export type SurfpackProps = {
+  bundlerUrl: string;
+  files: RunnerFile[];
+  entryFile?: string;
+  theme?: UiTheme;
+  width?: number | string;
+  height?: number | string;
+  showCodeEditor?: boolean;
+  showFileBrowser?: boolean;
+  showNavigator?: boolean;
+  codeEditorInitialWidth?: number;
+  fileBrowserDefaultExpanded?: boolean;
+  debounceDelay?: number;
   activeFilePath?: string | null;
+  onBundleComplete?: () => void;
+  onBundleError?: (error: string) => void;
+  onIframeReady?: () => void;
   onFileOpen?: (file: RunnerFile) => void;
   onFileChange?: (file: RunnerFile) => void;
   onNavigate?: (route: string) => void;
@@ -27,10 +39,14 @@ export type AppShellProps = UiOptions & {
   onNavigatorInputChange?: (value: string) => void;
   navigatorUrl?: string;
   providePreviewContainer?: (el: HTMLDivElement) => void;
+  errorLevel?: "all-errors" | "compilation-errors" | "runtime-errors" | "none";
+  debugMode?: boolean;
 };
 
-export function AppShell(props: AppShellProps) {
+export function Surfpack(props: SurfpackProps) {
+  console.log("Rendering Surfpack component");
   const {
+    files = [],
     theme = "device-settings",
     width = "100%",
     height = "100%",
@@ -41,33 +57,32 @@ export function AppShell(props: AppShellProps) {
     codeEditorInitialWidth,
     debounceDelay = 700,
     navigatorUrl,
+    errorLevel = "all-errors",
   } = props;
 
-  const files = props.files ?? [];
   const rootRef = useRef<HTMLDivElement | null>(null);
   const fileBrowserContainerRef = useRef<HTMLDivElement | null>(null);
   const codeEditorContainerRef = useRef<HTMLDivElement | null>(null);
   const previewAreaRef = useRef<HTMLDivElement | null>(null);
-  const previewIframeContainerRef = useRef<HTMLDivElement | null>(null);
-  const [internalActivePath, setInternalActivePath] = useState<string | null>(
-    null
+  // const previewIframeContainerRef = useRef<HTMLDivElement | null>(null);
+  const [internalActivePath, setInternalActivePath] = useState(
+    props.activeFilePath
   );
-  const [navigatorInputValue, setNavigatorInputValue] = useState<string>(
-    navigatorUrl ?? "/"
-  );
+  const [internalFiles, setInternalFiles] = useState<RunnerFile[]>(files);
 
-  const resolvedActivePath =
-    props.activeFilePath !== undefined
-      ? props.activeFilePath
-      : internalActivePath;
-  const activeFile = useMemo(() => {
-    if (!resolvedActivePath) {
-      return null;
+  React.useEffect(() => {
+    setInternalFiles(files);
+  }, [files]);
+
+  React.useEffect(() => {
+    if (props.activeFilePath !== undefined) {
+      setInternalActivePath(props.activeFilePath);
     }
-    return (
-      files.find((candidate) => candidate.path === resolvedActivePath) ?? null
-    );
-  }, [files, resolvedActivePath]);
+  }, [props.activeFilePath]);
+
+  const activeFile = files.find(
+    (candidate) => candidate.path === internalActivePath
+  );
 
   // Apply global styles once
   useEffect(() => {
@@ -84,53 +99,15 @@ export function AppShell(props: AppShellProps) {
     else if (theme === "light") el.classList.add("light-mode");
   }, [theme]);
 
-  // Provide preview container back to the adapter
-  useEffect(() => {
-    if (props.providePreviewContainer && previewIframeContainerRef.current) {
-      props.providePreviewContainer(previewIframeContainerRef.current);
-    }
-  }, [props.providePreviewContainer]);
-
   useEffect(() => {
     if (props.activeFilePath !== undefined) {
       setInternalActivePath(props.activeFilePath);
     }
   }, [props.activeFilePath]);
 
-  useEffect(() => {
-    if (navigatorUrl !== undefined) {
-      setNavigatorInputValue(navigatorUrl || "/");
-    }
-  }, [navigatorUrl]);
-
-  const handleFileOpen = useCallback(
-    (file: RunnerFile) => {
-      if (props.activeFilePath === undefined) {
-        setInternalActivePath(file.path);
-      }
-      props.onFileOpen?.(file);
-    },
-    [props.activeFilePath, props.onFileOpen]
-  );
-
-  const handleNavigatorInputChange = useCallback(
-    (value: string) => {
-      setNavigatorInputValue(value);
-      props.onNavigatorInputChange?.(value);
-    },
-    [props.onNavigatorInputChange]
-  );
-
-  const handleNavigate = useCallback(
-    (route: string) => {
-      props.onNavigate?.(route);
-    },
-    [props.onNavigate]
-  );
-
-  const handleRefresh = useCallback(() => {
-    props.onRefresh?.();
-  }, [props.onRefresh]);
+  function handleFileOpen(file: RunnerFile) {
+    setInternalActivePath(file.path);
+  }
 
   const style = useMemo(() => {
     const resolved: React.CSSProperties = {};
@@ -177,15 +154,6 @@ export function AppShell(props: AppShellProps) {
     }
   }, [codeEditorInitialWidth]);
 
-  const navigatorNode = showNavigator ? (
-    <NavigatorBar
-      route={navigatorInputValue}
-      onRouteChange={handleNavigatorInputChange}
-      onNavigate={handleNavigate}
-      onRefresh={handleRefresh}
-    />
-  ) : null;
-
   return (
     <div
       ref={rootRef}
@@ -200,8 +168,8 @@ export function AppShell(props: AppShellProps) {
         {showFileBrowser ? (
           <FileBrowser
             className="surfpack-file-browser"
-            files={files}
-            activePath={resolvedActivePath}
+            files={internalFiles}
+            activePath={internalActivePath}
             defaultExpanded={fileBrowserDefaultExpanded}
             onSelect={handleFileOpen}
           />
@@ -221,7 +189,20 @@ export function AppShell(props: AppShellProps) {
             file={activeFile}
             theme={theme}
             debounceDelay={debounceDelay}
-            onChange={props.onFileChange}
+            onChange={(file: RunnerFile) => {
+              console.log("onChange");
+              // should find and replace the file in the files array, if it dont exists, it add it
+              const newFiles = [...internalFiles];
+              const index = newFiles.findIndex(
+                (candidate) => candidate.path === file.path
+              );
+              if (index !== -1) {
+                newFiles[index] = file;
+              } else {
+                newFiles.push(file);
+              }
+              setInternalFiles(newFiles);
+            }}
           />
         ) : null}
       </div>
@@ -230,10 +211,14 @@ export function AppShell(props: AppShellProps) {
         {...rightHandleProps}
       />
       <Preview
+        initialRoute="/"
+        files={internalFiles}
+        entryFile={props.entryFile}
+        bundlerUrl={props.bundlerUrl}
         areaRef={previewAreaRef}
-        containerRef={previewIframeContainerRef}
-        showNavigator={showNavigator}
-        navigator={navigatorNode}
+        // containerRef={previewIframeContainerRef}
+        showNavigator={!!props.showNavigator}
+        // onIframeReady={props.onIframeReady}
       />
     </div>
   );

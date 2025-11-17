@@ -2,30 +2,28 @@ import React, { useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
 export type NavigatorProps = {
-  route?: string;
-  onRouteChange?: (nextRoute: string) => void;
+  route: string;
+  onUserTriggerRouteChange: (nextRoute: string) => void;
   onNavigate?: (route: string) => void;
   onRefresh?: () => void;
 };
 
 export function Navigator({
-  route = "/",
-  onRouteChange,
+  route,
+  onUserTriggerRouteChange,
   onNavigate,
   onRefresh,
 }: NavigatorProps) {
-  const [inputValue, setInputValue] = useState(route || "/");
-  const committedRouteRef = useRef(route || "/");
+  const [inputValue, setInputValue] = useState(route);
 
   useEffect(() => {
-    setInputValue(route || "/");
-    committedRouteRef.current = route || "/";
+    setInputValue(route);
   }, [route]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const next = event.target.value;
     setInputValue(next);
-    onRouteChange?.(next);
+    // onRouteChange?.(next);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -34,11 +32,13 @@ export function Navigator({
     }
 
     const trimmed = inputValue.trim();
-    if (!trimmed || trimmed === committedRouteRef.current) {
+    if (!trimmed) {
       return;
     }
 
-    onNavigate?.(trimmed);
+    onUserTriggerRouteChange(trimmed);
+
+    // onNavigate?.(trimmed);
   };
 
   return (

@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import type { RunnerFile } from "../../../index.js";
-import { useCodeMirror } from "../../hooks/useCodeMirror";
+import { useCodeMirror } from "../../hooks/useCodeMirror.js";
 
 export type CodeEditorProps = {
-  file: RunnerFile | null;
+  file?: RunnerFile;
   theme: "light" | "dark" | "device-settings";
   debounceDelay?: number;
   onChange?: (file: RunnerFile) => void;

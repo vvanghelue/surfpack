@@ -4,12 +4,14 @@ import { todoAppReact } from "./todo-app-react.js";
 import { weatherAppReact } from "./weather-app-react.js";
 import { vanillaJsTodoApp } from "./vanilla-js-todo.js";
 import { calculatorApp } from "./calculator-app.js";
+import { reactRouterApp } from "./react-router-app.js";
 
 // Export all templates
 export const demoTemplates = {
   "react-basic": basicCounterReact,
   "react-todo": todoAppReact,
   "react-weather": weatherAppReact,
+  "react-router": reactRouterApp,
   "vanilla-todo": vanillaJsTodoApp,
   calculator: calculatorApp,
 };
@@ -19,6 +21,7 @@ export {
   basicCounterReact,
   todoAppReact,
   weatherAppReact,
+  reactRouterApp,
   vanillaJsTodoApp,
   calculatorApp,
 };

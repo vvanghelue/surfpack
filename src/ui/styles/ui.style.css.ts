@@ -84,7 +84,7 @@ const styles = `
         box-sizing: border-box;
         display: flex;
         border: 1px solid var(--surfpack-border);
-        border-radius: 4px;
+        border-radius: 12px;
         __box-shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         display: flex;
@@ -202,9 +202,6 @@ const styles = `
         flex: 1;
         position: relative;
         overflow: hidden;
-        height: 100%;
-    }
-    .surfpack-iframe-bundler-iframe iframe {
         width: 100%;
         height: 100%;
         border: none;
