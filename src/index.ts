@@ -1,18 +1,10 @@
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
-import { Surfpack, SurfpackProps } from "./ui/components/Surfpack.js";
+import { Surfpack, type SurfpackProps } from "./ui/components/Surfpack.js";
 export * from "./iframe-runner/iframe-runner.js";
 export * from "./standalone-runner/standalone-runner.js";
-export type {
-  UiTheme,
-  FileBrowserAdapter,
-  CodeEditorAdapter,
-  NavigatorAdapter,
-  UiOptions,
-  UiComponent,
-} from "./ui/types.js";
-
 import type { UiTheme } from "./ui/types.js";
+export { Surfpack, type SurfpackProps } from "./ui/components/Surfpack.js";
 
 export interface RunnerFile {
   path: string;

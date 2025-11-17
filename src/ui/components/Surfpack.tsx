@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import type { RunnerFile } from "../../index.js";
-import type { UiOptions, UiTheme } from "../types.js";
+import type { UiTheme } from "../types.js";
 import { applyUiStyles } from "../styles/ui.style.css.js";
 import { applyCodeMirrorStyles } from "../styles/codemirror.style.css.js";
 import { FileBrowser } from "./FileBrowser/FileBrowser.js";
@@ -29,18 +29,7 @@ export type SurfpackProps = {
   fileBrowserDefaultExpanded?: boolean;
   debounceDelay?: number;
   activeFilePath?: string | null;
-  onBundleComplete?: () => void;
-  onBundleError?: (error: string) => void;
   onIframeReady?: () => void;
-  onFileOpen?: (file: RunnerFile) => void;
-  onFileChange?: (file: RunnerFile) => void;
-  onNavigate?: (route: string) => void;
-  onRefresh?: () => void;
-  onNavigatorInputChange?: (value: string) => void;
-  navigatorUrl?: string;
-  providePreviewContainer?: (el: HTMLDivElement) => void;
-  errorLevel?: "all-errors" | "compilation-errors" | "runtime-errors" | "none";
-  debugMode?: boolean;
 };
 
 export function Surfpack(props: SurfpackProps) {
@@ -56,15 +45,12 @@ export function Surfpack(props: SurfpackProps) {
     fileBrowserDefaultExpanded = true,
     codeEditorInitialWidth,
     debounceDelay = 700,
-    navigatorUrl,
-    errorLevel = "all-errors",
   } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const fileBrowserContainerRef = useRef<HTMLDivElement | null>(null);
   const codeEditorContainerRef = useRef<HTMLDivElement | null>(null);
   const previewAreaRef = useRef<HTMLDivElement | null>(null);
-  // const previewIframeContainerRef = useRef<HTMLDivElement | null>(null);
   const [internalActivePath, setInternalActivePath] = useState(
     props.activeFilePath
   );
@@ -216,9 +202,7 @@ export function Surfpack(props: SurfpackProps) {
         entryFile={props.entryFile}
         bundlerUrl={props.bundlerUrl}
         areaRef={previewAreaRef}
-        // containerRef={previewIframeContainerRef}
         showNavigator={!!props.showNavigator}
-        // onIframeReady={props.onIframeReady}
       />
     </div>
   );

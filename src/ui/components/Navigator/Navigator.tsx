@@ -4,14 +4,12 @@ import { RefreshCw } from "lucide-react";
 export type NavigatorProps = {
   route: string;
   onUserTriggerRouteChange: (nextRoute: string) => void;
-  onNavigate?: (route: string) => void;
   onRefresh?: () => void;
 };
 
 export function Navigator({
   route,
   onUserTriggerRouteChange,
-  onNavigate,
   onRefresh,
 }: NavigatorProps) {
   const [inputValue, setInputValue] = useState(route);
@@ -23,7 +21,6 @@ export function Navigator({
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const next = event.target.value;
     setInputValue(next);
-    // onRouteChange?.(next);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -37,8 +34,6 @@ export function Navigator({
     }
 
     onUserTriggerRouteChange(trimmed);
-
-    // onNavigate?.(trimmed);
   };
 
   return (

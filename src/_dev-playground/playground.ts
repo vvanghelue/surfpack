@@ -187,7 +187,6 @@ function createRunner() {
     files: files as RunnerFile[],
     entryFile: entryFile,
     activeFilePath: entryFile,
-    debugMode: true,
 
     theme: themeSelect.value as "light" | "dark" | "device-settings",
     width: "100%",
@@ -196,12 +195,6 @@ function createRunner() {
     showFileBrowser: checkboxes.showFileBrowser.checked,
     showNavigator: checkboxes.showNavigator.checked,
 
-    onBundleComplete: () => {
-      console.log("Bundle completed");
-    },
-    onBundleError: (error: string) => {
-      console.error("Bundle error:", error);
-    },
     onIframeReady: () => {
       console.log("Iframe is ready");
     },
