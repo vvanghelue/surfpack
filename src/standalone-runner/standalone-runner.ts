@@ -19,9 +19,7 @@ export async function standaloneRunner(options: StandaloneRunnerOptions) {
   //   );
   // }
 
-  if (showErrorOverlay === true) {
-    installGlobalErrorHandler();
-  }
+  installGlobalErrorHandler({ showErrorOverlay });
 
   const { code, css } = await buildBundle(files, options.entryFile);
 

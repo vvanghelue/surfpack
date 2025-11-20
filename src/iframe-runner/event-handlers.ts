@@ -3,7 +3,10 @@ import {
   clearErrorOverlay,
   renderErrorOverlay,
 } from "../bundler/error-handler/error-overlay.js";
-import { installGlobalErrorHandler } from "../bundler/error-handler/global-error-handler.js";
+import {
+  installGlobalErrorHandler,
+  NormalizedError,
+} from "../bundler/error-handler/global-error-handler.js";
 import { sanitizeFiles } from "../bundler/source-file.js";
 import {
   MessageErrorOverlaySetup,
@@ -38,43 +41,43 @@ const handleFilesUpdate = async (
   //   return;
   // }
 
-  try {
-    console.log("Building preview...");
-    const { code, css } = await buildBundle(files, entry);
-    if (token !== buildCounter) {
-      return;
-    }
-
-    if (!code.trim()) {
-      throw new Error("Bundle is empty. Check your entry file exports.");
-    }
-
-    await runBundle(code, css, files);
-    if (token !== buildCounter) {
-      return;
-    }
-
-    clearErrorOverlay();
-    postToParent({
-      type: "build-result-ack",
-      payload: { fileCount: files.length, success: true },
-    });
-    initializeRoutingState(rawPayload.initialRouteState);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    const stack = error instanceof Error ? error.stack || "" : "";
-    console.error(`Build failed:\n${message}`);
-    console.error(error);
-
-    renderErrorOverlay("Compilation Error", message, stack);
-
-    if (token === buildCounter) {
-      postToParent({
-        type: "build-result-ack",
-        payload: { fileCount: files.length, success: false, error: message },
-      });
-    }
+  // try {
+  console.log("Building preview...");
+  const { code, css } = await buildBundle(files, entry);
+  if (token !== buildCounter) {
+    return;
   }
+
+  if (!code.trim()) {
+    throw new Error("Bundle is empty. Check your entry file exports.");
+  }
+
+  await runBundle(code, css, files);
+  if (token !== buildCounter) {
+    return;
+  }
+
+  clearErrorOverlay();
+  postToParent({
+    type: "build-result-ack",
+    payload: { fileCount: files.length, success: true },
+  });
+  initializeRoutingState(rawPayload.initialRouteState);
+  // } catch (error) {
+  //   const message = error instanceof Error ? error.message : String(error);
+  //   const stack = error instanceof Error ? error.stack || "" : "";
+  //   console.error(`Build failed:\n${message}`);
+  //   console.error(error);
+
+  //   renderErrorOverlay("Compilation Error", message, stack);
+
+  //   if (token === buildCounter) {
+  //     postToParent({
+  //       type: "build-result-ack",
+  //       payload: { fileCount: files.length, success: false, error: message },
+  //     });
+  //   }
+  // }
 };
 
 export const registerParentMessageListener = (): void => {
@@ -91,11 +94,20 @@ export const registerParentMessageListener = (): void => {
       applyRouteChangeFromParent(event.data as MessageLoadRoute);
     }
 
-    if (event.data.type === "error-overlay-setup") {
+    if (event.data.type === "error-configuration-setup") {
       const { payload } = event.data as MessageErrorOverlaySetup;
-      if (payload.errorOverlayErrors) {
-        installGlobalErrorHandler();
-      }
+      //if (payload.showErrorOverlay) {
+      installGlobalErrorHandler({
+        showErrorOverlay: payload.showErrorOverlay,
+        errorTypesSetup: payload.errorOverlayErrors,
+        onErrorCallback: (normalizedError: NormalizedError) => {
+          postToParent({
+            type: "app-handled-error",
+            payload: { error: normalizedError },
+          });
+        },
+      });
+      //}
 
       // @TODO
       // (event.data as MessageErrorOverlaySetup);

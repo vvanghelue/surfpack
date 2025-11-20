@@ -14,7 +14,10 @@ import { CodeEditor } from "./CodeEditor/CodeEditor.js";
 import { Preview } from "./Preview/Preview.js";
 import { ResizeHandle } from "./Resizer/ResizeHandle.js";
 import { useHorizontalResizers } from "../hooks/useHorizontalResizers.js";
-import { ErrorOverlaySetup } from "../../bundler/error-handler/global-error-handler.js";
+import {
+  ErrorOverlaySetup,
+  NormalizedError,
+} from "../../bundler/error-handler/global-error-handler.js";
 import { ErrorType } from "../../bundler/error-handler/global-error-handler.js";
 
 export type SurfpackProps = {
@@ -34,7 +37,7 @@ export type SurfpackProps = {
   onIframeReady?: () => void;
   showErrorOverlay?: boolean;
   errorOverlayErrors?: ErrorOverlaySetup;
-  onError?: (error: { error: string; level: ErrorType }) => void;
+  onError?: (error: NormalizedError) => void;
 };
 
 export function Surfpack(props: SurfpackProps) {
@@ -50,6 +53,8 @@ export function Surfpack(props: SurfpackProps) {
     fileBrowserDefaultExpanded = true,
     codeEditorInitialWidth,
     debounceDelay = 700,
+    showErrorOverlay = true,
+    onError,
   } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -208,8 +213,9 @@ export function Surfpack(props: SurfpackProps) {
         bundlerUrl={props.bundlerUrl}
         areaRef={previewAreaRef}
         showNavigator={!!props.showNavigator}
-        showErrorOverlay={props.showErrorOverlay}
+        showErrorOverlay={showErrorOverlay}
         errorOverlayErrors={props.errorOverlayErrors}
+        onError={onError}
       />
     </div>
   );

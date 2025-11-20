@@ -11,10 +11,10 @@ export type ErrorOverlaySetup = ErrorType[] | "all";
 
 // let errorLe
 
-interface NormalizedError {
+export type NormalizedError = {
   message: string;
   stack: string;
-}
+};
 
 declare global {
   interface Window {
@@ -86,11 +86,20 @@ const isNetworkOrResourceError = (
   return false;
 };
 
-export async function handleRuntimeError(
-  value: unknown,
-  origin?: string,
-  event?: ErrorEvent
-): Promise<void> {
+type HandleRuntimeErrorParams = {
+  value: unknown;
+  origin?: string;
+  event?: ErrorEvent;
+  onErrorCallback?: (error: NormalizedError) => void;
+  showErrorOverlay?: boolean;
+};
+export async function handleGlobalError({
+  value,
+  origin,
+  event,
+  onErrorCallback = () => {},
+  showErrorOverlay = true,
+}: HandleRuntimeErrorParams): Promise<void> {
   // Filter out network/resource loading errors
   if (isNetworkOrResourceError(value, event)) {
     console.warn("Network/Resource error (ignored by error overlay):", value);
@@ -99,6 +108,7 @@ export async function handleRuntimeError(
 
   console.error(value);
   const { message, stack } = normalizeError(value);
+  onErrorCallback({ message, stack });
 
   // Try to decode source map and create code preview
   let codePreviewHtml: string | undefined;
@@ -136,14 +146,28 @@ export async function handleRuntimeError(
     const title = origin
       ? `Compilation Error (${origin})`
       : "Compilation Error";
-    renderErrorOverlay(title, message, stack, codePreviewHtml);
+    if (showErrorOverlay) {
+      renderErrorOverlay(title, message, stack, codePreviewHtml);
+    }
     return;
   }
   const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
-  renderErrorOverlay(title, message, stack, codePreviewHtml);
+  if (showErrorOverlay) {
+    renderErrorOverlay(title, message, stack, codePreviewHtml);
+  }
 }
 
-export const installGlobalErrorHandler = (): void => {
+export const installGlobalErrorHandler = ({
+  showErrorOverlay = false,
+  errorTypesSetup = ["runtime", "compilation"],
+  onErrorCallback = () => {},
+}: {
+  showErrorOverlay?: boolean;
+  errorTypesSetup?: ErrorOverlaySetup;
+  onErrorCallback?: (error: NormalizedError) => void;
+}) => {
+  console.log("Installing global error handler...", errorTypesSetup);
+
   if (window.__surfpackErrorHandlerInstalled) {
     return;
   }
@@ -157,7 +181,13 @@ export const installGlobalErrorHandler = (): void => {
       }
       event.preventDefault();
       const error = event.error || new Error(event.message || "Unknown error");
-      void handleRuntimeError(error, "error", event);
+      void handleGlobalError({
+        value: error,
+        origin: "error",
+        event,
+        onErrorCallback,
+        showErrorOverlay,
+      });
     },
     true
   );
@@ -169,7 +199,12 @@ export const installGlobalErrorHandler = (): void => {
         return;
       }
       event.preventDefault();
-      void handleRuntimeError(event.reason, "unhandledrejection");
+      void handleGlobalError({
+        value: event.reason,
+        origin: "unhandledrejection",
+        onErrorCallback,
+        showErrorOverlay,
+      });
     },
     true
   );

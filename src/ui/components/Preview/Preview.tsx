@@ -3,7 +3,10 @@ import type {
   MessageFromIframe,
   MessageToIframe,
 } from "../../../iframe-runner/iframe-messaging.js";
-import type { ErrorOverlaySetup } from "../../../bundler/error-handler/global-error-handler.js";
+import type {
+  ErrorOverlaySetup,
+  NormalizedError,
+} from "../../../bundler/error-handler/global-error-handler.js";
 
 import React from "react";
 import type { MutableRefObject } from "react";
@@ -21,6 +24,7 @@ export type PreviewProps = {
   onIframeReady?: () => void;
   showErrorOverlay?: boolean;
   errorOverlayErrors?: ErrorOverlaySetup;
+  onError?: (error: NormalizedError) => void;
 };
 
 export function Preview({
@@ -33,6 +37,7 @@ export function Preview({
   onIframeReady,
   showErrorOverlay,
   errorOverlayErrors,
+  onError,
 }: PreviewProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const isIframeReady = React.useRef(false);
@@ -65,7 +70,7 @@ export function Preview({
 
   function sendErrorOverlaySetup() {
     sendMessageToIframe({
-      type: "error-overlay-setup",
+      type: "error-configuration-setup",
       payload: {
         showErrorOverlay: showErrorOverlay || false,
         errorOverlayErrors: errorOverlayErrors,
@@ -99,6 +104,13 @@ export function Preview({
 
     if (messageData.type === "routing-history-state-changed") {
       setRoute(messageData.payload.newRoute);
+    }
+
+    if (messageData.type === "app-handled-error") {
+      console.log("Received error from iframe:", messageData.payload.error);
+      if (onError) {
+        onError(messageData.payload.error);
+      }
     }
   }
 

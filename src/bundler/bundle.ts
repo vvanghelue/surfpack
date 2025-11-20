@@ -15,7 +15,6 @@ import {
   extractCssLoadedInHtml,
   extractFileEntryFromHtml,
 } from "./extract-html.js";
-import { handleRuntimeError } from "./error-handler/global-error-handler.js";
 import { clearErrorOverlay } from "./error-handler/error-overlay.js";
 
 declare global {
@@ -264,10 +263,5 @@ export const runBundle = async (
   currentModuleUrl = url;
   ensureImportMap(files);
 
-  try {
-    await import(url);
-  } catch (error) {
-    handleRuntimeError(error);
-    throw error; // Re-throw to maintain existing error handling behavior
-  }
+  await import(url);
 };

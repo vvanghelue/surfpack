@@ -19,10 +19,21 @@ export type MessageHistoryStateChanged = {
     newRoute: string;
   };
 };
+
+export type MessageHandledError = {
+  type: "app-handled-error";
+  payload: {
+    error: {
+      message: string;
+      stack: string;
+    };
+  };
+};
 export type MessageFromIframe =
   | MessageIframeReady
   | MessageBuildResultAck
-  | MessageHistoryStateChanged;
+  | MessageHistoryStateChanged
+  | MessageHandledError;
 
 /**
  * Messages sent from the parent window to the iframe
@@ -42,7 +53,7 @@ export type MessageLoadRoute = {
   };
 };
 export type MessageErrorOverlaySetup = {
-  type: "error-overlay-setup";
+  type: "error-configuration-setup";
   payload: {
     showErrorOverlay: boolean;
     errorOverlayErrors?: ErrorOverlaySetup;
