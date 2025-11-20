@@ -1,6 +1,6 @@
 import { buildBundle, runBundle } from "../bundler/bundle";
+import { installGlobalErrorHandler } from "../bundler/error-handler/global-error-handler";
 import { RunnerSourceFile, sanitizeFiles } from "../bundler/source-file";
-import { installGlobalErrorHandler } from "../bundler/error-handler/error-handler.js";
 
 type StandaloneRunnerOptions = {
   files: RunnerSourceFile[];

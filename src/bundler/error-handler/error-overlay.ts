@@ -36,7 +36,7 @@ const ensureOverlay = (): HTMLDivElement => {
   return overlay;
 };
 
-export const renderOverlay = (
+export const renderErrorOverlay = (
   title: string,
   message: string,
   stack: string,

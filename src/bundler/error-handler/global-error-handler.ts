@@ -1,10 +1,15 @@
 import { CompilationError } from "../bundle.js";
 import type { RunnerSourceFile } from "../source-file.js";
-import { renderOverlay } from "./error-overlay.js";
+import { renderErrorOverlay } from "./error-overlay.js";
 import { decodeStackTrace } from "./sourcemap-decoder.js";
 import { createCodePreview, renderCodePreviewHtml } from "./code-preview.js";
 
 const OVERLAY_TITLE = "Runtime Error";
+
+export type ErrorType = "runtime" | "compilation" | "network";
+export type ErrorOverlaySetup = ErrorType[] | "all";
+
+// let errorLe
 
 interface NormalizedError {
   message: string;
@@ -81,11 +86,11 @@ const isNetworkOrResourceError = (
   return false;
 };
 
-const handleRuntimeError = async (
+export async function handleRuntimeError(
   value: unknown,
   origin?: string,
   event?: ErrorEvent
-): Promise<void> => {
+): Promise<void> {
   // Filter out network/resource loading errors
   if (isNetworkOrResourceError(value, event)) {
     console.warn("Network/Resource error (ignored by error overlay):", value);
@@ -131,12 +136,12 @@ const handleRuntimeError = async (
     const title = origin
       ? `Compilation Error (${origin})`
       : "Compilation Error";
-    renderOverlay(title, message, stack, codePreviewHtml);
+    renderErrorOverlay(title, message, stack, codePreviewHtml);
     return;
   }
   const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
-  renderOverlay(title, message, stack, codePreviewHtml);
-};
+  renderErrorOverlay(title, message, stack, codePreviewHtml);
+}
 
 export const installGlobalErrorHandler = (): void => {
   if (window.__surfpackErrorHandlerInstalled) {
@@ -168,8 +173,4 @@ export const installGlobalErrorHandler = (): void => {
     },
     true
   );
-};
-
-export const showErrorOverlay = (error: unknown): void => {
-  void handleRuntimeError(error);
 };

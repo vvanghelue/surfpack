@@ -1,7 +1,3 @@
-import {
-  clearErrorOverlay,
-  showErrorOverlay,
-} from "./error-handler/error-handler.js";
 import { ensureEsbuild, type Esbuild } from "./esbuild.js";
 import { ensureImportMap } from "./import-map.js";
 import {
@@ -19,6 +15,8 @@ import {
   extractCssLoadedInHtml,
   extractFileEntryFromHtml,
 } from "./extract-html.js";
+import { handleRuntimeError } from "./error-handler/global-error-handler.js";
+import { clearErrorOverlay } from "./error-handler/error-overlay.js";
 
 declare global {
   interface Window {
@@ -269,7 +267,7 @@ export const runBundle = async (
   try {
     await import(url);
   } catch (error) {
-    showErrorOverlay(error);
+    handleRuntimeError(error);
     throw error; // Re-throw to maintain existing error handling behavior
   }
 };

@@ -14,6 +14,8 @@ import { CodeEditor } from "./CodeEditor/CodeEditor.js";
 import { Preview } from "./Preview/Preview.js";
 import { ResizeHandle } from "./Resizer/ResizeHandle.js";
 import { useHorizontalResizers } from "../hooks/useHorizontalResizers.js";
+import { ErrorOverlaySetup } from "../../bundler/error-handler/global-error-handler.js";
+import { ErrorType } from "../../bundler/error-handler/global-error-handler.js";
 
 export type SurfpackProps = {
   bundlerUrl: string;
@@ -30,6 +32,9 @@ export type SurfpackProps = {
   debounceDelay?: number;
   activeFilePath?: string | null;
   onIframeReady?: () => void;
+  showErrorOverlay?: boolean;
+  errorOverlayErrors?: ErrorOverlaySetup;
+  onError?: (error: { error: string; level: ErrorType }) => void;
 };
 
 export function Surfpack(props: SurfpackProps) {
@@ -203,6 +208,8 @@ export function Surfpack(props: SurfpackProps) {
         bundlerUrl={props.bundlerUrl}
         areaRef={previewAreaRef}
         showNavigator={!!props.showNavigator}
+        showErrorOverlay={props.showErrorOverlay}
+        errorOverlayErrors={props.errorOverlayErrors}
       />
     </div>
   );

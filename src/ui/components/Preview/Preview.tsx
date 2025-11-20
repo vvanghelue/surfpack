@@ -2,14 +2,13 @@ import type {
   MessageFilesUpdate,
   MessageFromIframe,
   MessageToIframe,
-  MessageLoadRoute,
 } from "../../../iframe-runner/iframe-messaging.js";
+import type { ErrorOverlaySetup } from "../../../bundler/error-handler/global-error-handler.js";
 
 import React from "react";
 import type { MutableRefObject } from "react";
 import { Navigator } from "../Navigator/Navigator.js";
 import { RunnerFile } from "../../../index.js";
-import { Files } from "lucide-react";
 
 export type PreviewProps = {
   files: RunnerFile[];
@@ -20,6 +19,8 @@ export type PreviewProps = {
   // containerRef: MutableRefObject<HTMLDivElement | null>;
   showNavigator: boolean;
   onIframeReady?: () => void;
+  showErrorOverlay?: boolean;
+  errorOverlayErrors?: ErrorOverlaySetup;
 };
 
 export function Preview({
@@ -30,6 +31,8 @@ export function Preview({
   initialRoute = "/",
   showNavigator,
   onIframeReady,
+  showErrorOverlay,
+  errorOverlayErrors,
 }: PreviewProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const isIframeReady = React.useRef(false);
@@ -46,6 +49,7 @@ export function Preview({
       setTimeout(sendMessageToIframe, 100, message);
     }
   }
+
   function sendFiles(files: RunnerFile[], entry?: string) {
     console.log("[iframe handler] sendFiles called with route:", route);
     const message: MessageFilesUpdate = {
@@ -57,6 +61,16 @@ export function Preview({
       },
     };
     sendMessageToIframe(message);
+  }
+
+  function sendErrorOverlaySetup() {
+    sendMessageToIframe({
+      type: "error-overlay-setup",
+      payload: {
+        showErrorOverlay: showErrorOverlay || false,
+        errorOverlayErrors: errorOverlayErrors,
+      },
+    });
   }
 
   function onIframePostMessage(event: MessageEvent<unknown>) {
@@ -72,6 +86,7 @@ export function Preview({
 
     if (messageData.type === "iframe-ready") {
       isIframeReady.current = true;
+      sendErrorOverlaySetup();
       sendFiles(files, entryFile);
     }
 

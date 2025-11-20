@@ -1,10 +1,12 @@
 import { buildBundle, runBundle } from "../bundler/bundle.js";
 import {
-  renderOverlay,
   clearErrorOverlay,
+  renderErrorOverlay,
 } from "../bundler/error-handler/error-overlay.js";
+import { installGlobalErrorHandler } from "../bundler/error-handler/global-error-handler.js";
 import { sanitizeFiles } from "../bundler/source-file.js";
 import {
+  MessageErrorOverlaySetup,
   MessageFilesUpdate,
   MessageLoadRoute,
   MessageToIframe,
@@ -14,20 +16,6 @@ import {
   applyRouteChangeFromParent,
   initializeRoutingState,
 } from "./routing-history-state.js";
-
-const isFilesUpdateMessage = (data: unknown) => {
-  if (typeof data !== "object" || data === null) {
-    return false;
-  }
-  return (data as { type?: unknown }).type === "files-update";
-};
-
-const isLoadRouteMessage = (data: unknown) => {
-  if (typeof data !== "object" || data === null) {
-    return false;
-  }
-  return (data as { type?: unknown }).type === "routing-history-load-route";
-};
 
 let buildCounter = 0;
 
@@ -78,7 +66,7 @@ const handleFilesUpdate = async (
     console.error(`Build failed:\n${message}`);
     console.error(error);
 
-    renderOverlay("Compilation Error", message, stack);
+    renderErrorOverlay("Compilation Error", message, stack);
 
     if (token === buildCounter) {
       postToParent({
@@ -95,14 +83,22 @@ export const registerParentMessageListener = (): void => {
       return;
     }
 
-    if (isFilesUpdateMessage(event.data)) {
-      if (event.data.type === "files-update") {
-        handleFilesUpdate(event.data.payload);
+    if (event.data.type === "files-update") {
+      handleFilesUpdate(event.data.payload);
+    }
+
+    if (event.data.type === "routing-history-load-route") {
+      applyRouteChangeFromParent(event.data as MessageLoadRoute);
+    }
+
+    if (event.data.type === "error-overlay-setup") {
+      const { payload } = event.data as MessageErrorOverlaySetup;
+      if (payload.errorOverlayErrors) {
+        installGlobalErrorHandler();
       }
-    } else if (isLoadRouteMessage(event.data)) {
-      if (event.data.type === "routing-history-load-route") {
-        applyRouteChangeFromParent(event.data as MessageLoadRoute);
-      }
+
+      // @TODO
+      // (event.data as MessageErrorOverlaySetup);
     }
   });
 };

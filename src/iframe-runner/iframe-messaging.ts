@@ -1,3 +1,4 @@
+import { ErrorOverlaySetup } from "../bundler/error-handler/global-error-handler";
 import { RunnerSourceFile } from "../bundler/source-file";
 
 /**
@@ -40,7 +41,17 @@ export type MessageLoadRoute = {
     routeToGoTo: string;
   };
 };
-export type MessageToIframe = MessageFilesUpdate | MessageLoadRoute;
+export type MessageErrorOverlaySetup = {
+  type: "error-overlay-setup";
+  payload: {
+    showErrorOverlay: boolean;
+    errorOverlayErrors?: ErrorOverlaySetup;
+  };
+};
+export type MessageToIframe =
+  | MessageFilesUpdate
+  | MessageLoadRoute
+  | MessageErrorOverlaySetup;
 
 export const postToParent = (message: MessageFromIframe): void => {
   window.parent.postMessage(message, "*");
