@@ -1,7 +1,3 @@
-import {
-  clearErrorOverlay,
-  showErrorOverlay,
-} from "./error-handler/error-handler.js";
 import { ensureEsbuild, type Esbuild } from "./esbuild.js";
 import { ensureImportMap } from "./import-map.js";
 import {
@@ -19,6 +15,15 @@ import {
   extractCssLoadedInHtml,
   extractFileEntryFromHtml,
 } from "./extract-html.js";
+import { clearErrorOverlay } from "./error-handler/error-overlay/error-overlay.js";
+
+declare global {
+  interface Window {
+    __surfpackBundledCode?: string;
+    __surfpackSourceFiles?: ReadonlyArray<RunnerSourceFile>;
+  }
+}
+
 export interface BundleOutput {
   code: string;
   css: string[];
@@ -150,11 +155,8 @@ export const buildBundle = async (
     if (!entry && fileMap.has("index.html")) {
       // some heuristics on the presence of a <script/> with a src attribute matching a file
       entry = extractFileEntryFromHtml(fileMap.get("index.html") || "", files);
-      console.log({ entryFromHtml: entry });
     }
   }
-
-  console.log({ entry });
 
   const entryPath = normalizePath(entry);
   if (!entryPath || !fileMap.has(entryPath)) {
@@ -227,6 +229,10 @@ export const runBundle = async (
 ): Promise<void> => {
   clearErrorOverlay();
 
+  // Store bundled code and source files globally for error handler
+  window.__surfpackBundledCode = bundleCode;
+  window.__surfpackSourceFiles = files;
+
   // more heuristics for practicality
   document.body.innerHTML = `
     <div id="root"></div>
@@ -238,7 +244,6 @@ export const runBundle = async (
     ensureIndexHtml(document, indexHtmlFile.content ?? "");
   }
 
-  console.log({ cssChunks });
   applyCss(cssChunks);
 
   if (currentModuleUrl) {
@@ -254,10 +259,5 @@ export const runBundle = async (
   currentModuleUrl = url;
   ensureImportMap(files);
 
-  try {
-    await import(url);
-  } catch (error) {
-    showErrorOverlay(error);
-    throw error; // Re-throw to maintain existing error handling behavior
-  }
+  await import(url);
 };

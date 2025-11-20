@@ -1,3 +1,4 @@
+import { ErrorOverlaySetup } from "../bundler/error-handler/global-error-handler";
 import { RunnerSourceFile } from "../bundler/source-file";
 
 /**
@@ -18,10 +19,21 @@ export type MessageHistoryStateChanged = {
     newRoute: string;
   };
 };
+
+export type MessageHandledError = {
+  type: "app-handled-error";
+  payload: {
+    error: {
+      message: string;
+      stack: string;
+    };
+  };
+};
 export type MessageFromIframe =
   | MessageIframeReady
   | MessageBuildResultAck
-  | MessageHistoryStateChanged;
+  | MessageHistoryStateChanged
+  | MessageHandledError;
 
 /**
  * Messages sent from the parent window to the iframe
@@ -40,7 +52,17 @@ export type MessageLoadRoute = {
     routeToGoTo: string;
   };
 };
-export type MessageToIframe = MessageFilesUpdate | MessageLoadRoute;
+export type MessageErrorOverlaySetup = {
+  type: "error-configuration-setup";
+  payload: {
+    showErrorOverlay: boolean;
+    errorOverlayErrors?: ErrorOverlaySetup;
+  };
+};
+export type MessageToIframe =
+  | MessageFilesUpdate
+  | MessageLoadRoute
+  | MessageErrorOverlaySetup;
 
 export const postToParent = (message: MessageFromIframe): void => {
   window.parent.postMessage(message, "*");

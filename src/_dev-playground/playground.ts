@@ -180,28 +180,25 @@ const uiContainer = document.createElement("div");
 // uiContainer.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
 rootEl.appendChild(uiContainer);
 
-function createRunner() {
-  return init({
-    bundlerUrl: "./playground-iframe.html",
-    container: uiContainer,
-    files: files as RunnerFile[],
-    entryFile: entryFile,
-    activeFilePath: entryFile,
+let surfpack = init({
+  bundlerUrl: "./playground-iframe.html",
+  container: uiContainer,
+  files: files as RunnerFile[],
+  entryFile: entryFile,
+  activeFilePath: entryFile,
 
-    theme: themeSelect.value as "light" | "dark" | "device-settings",
-    width: "100%",
-    height: 800,
-    showCodeEditor: checkboxes.showCodeEditor.checked,
-    showFileBrowser: checkboxes.showFileBrowser.checked,
-    showNavigator: checkboxes.showNavigator.checked,
+  theme: themeSelect.value as "light" | "dark" | "device-settings",
+  width: "100%",
+  height: 800,
+  showCodeEditor: checkboxes.showCodeEditor.checked,
+  showFileBrowser: checkboxes.showFileBrowser.checked,
+  showNavigator: checkboxes.showNavigator.checked,
 
-    onIframeReady: () => {
-      console.log("Iframe is ready");
-    },
-  });
-}
-
-let surfpack = createRunner();
+  showErrorOverlay: true,
+  onError: (error) => {
+    console.log("Surfpack reported an error:", error);
+  },
+});
 
 // Function to switch templates
 function switchTemplate(templateKey: string) {

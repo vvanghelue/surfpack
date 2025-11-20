@@ -14,6 +14,10 @@ import { CodeEditor } from "./CodeEditor/CodeEditor.js";
 import { Preview } from "./Preview/Preview.js";
 import { ResizeHandle } from "./Resizer/ResizeHandle.js";
 import { useHorizontalResizers } from "../hooks/useHorizontalResizers.js";
+import {
+  DetailedNormalizedError,
+  ErrorOverlaySetup,
+} from "../../bundler/error-handler/global-error-handler.js";
 
 export type SurfpackProps = {
   bundlerUrl: string;
@@ -30,10 +34,12 @@ export type SurfpackProps = {
   debounceDelay?: number;
   activeFilePath?: string | null;
   onIframeReady?: () => void;
+  showErrorOverlay?: boolean;
+  errorOverlayErrors?: ErrorOverlaySetup;
+  onError?: (error: DetailedNormalizedError) => void;
 };
 
 export function Surfpack(props: SurfpackProps) {
-  console.log("Rendering Surfpack component");
   const {
     files = [],
     theme = "device-settings",
@@ -45,6 +51,8 @@ export function Surfpack(props: SurfpackProps) {
     fileBrowserDefaultExpanded = true,
     codeEditorInitialWidth,
     debounceDelay = 700,
+    showErrorOverlay = true,
+    onError,
   } = props;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -176,7 +184,6 @@ export function Surfpack(props: SurfpackProps) {
             theme={theme}
             debounceDelay={debounceDelay}
             onChange={(file: RunnerFile) => {
-              console.log("onChange");
               // should find and replace the file in the files array, if it dont exists, it add it
               const newFiles = [...internalFiles];
               const index = newFiles.findIndex(
@@ -203,6 +210,9 @@ export function Surfpack(props: SurfpackProps) {
         bundlerUrl={props.bundlerUrl}
         areaRef={previewAreaRef}
         showNavigator={!!props.showNavigator}
+        showErrorOverlay={showErrorOverlay}
+        errorOverlayErrors={props.errorOverlayErrors}
+        onError={onError}
       />
     </div>
   );

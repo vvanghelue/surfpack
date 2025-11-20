@@ -1,16 +1,33 @@
 import { CompilationError } from "../bundle.js";
-import { renderOverlay } from "./error-overlay.js";
+import type { RunnerSourceFile } from "../source-file.js";
+import { renderErrorOverlay } from "./error-overlay/error-overlay.js";
+import { decodeStackTrace } from "./sourcemap-decoder.js";
+import {
+  createCodePreview,
+  renderCodePreviewHtml,
+} from "./error-overlay/error-code-preview.js";
 
 const OVERLAY_TITLE = "Runtime Error";
 
-interface NormalizedError {
+export type ErrorType = "runtime" | "compilation" | "network";
+export type ErrorOverlaySetup = ErrorType[] | "all";
+
+// let errorLe
+
+export type NormalizedError = {
   message: string;
   stack: string;
-}
+};
+
+export type DetailedNormalizedError = NormalizedError & {
+  errorInFilePath?: string | null;
+};
 
 declare global {
   interface Window {
     __surfpackErrorHandlerInstalled?: boolean;
+    __surfpackBundledCode?: string;
+    __surfpackSourceFiles?: ReadonlyArray<RunnerSourceFile>;
   }
 }
 
@@ -76,11 +93,20 @@ const isNetworkOrResourceError = (
   return false;
 };
 
-const handleRuntimeError = (
-  value: unknown,
-  origin?: string,
-  event?: ErrorEvent
-): void => {
+type HandleRuntimeErrorParams = {
+  value: unknown;
+  origin?: string;
+  event?: ErrorEvent;
+  onErrorCallback?: (error: DetailedNormalizedError) => void;
+  showErrorOverlay?: boolean;
+};
+export async function handleGlobalError({
+  value,
+  origin,
+  event,
+  onErrorCallback = () => {},
+  showErrorOverlay = true,
+}: HandleRuntimeErrorParams): Promise<void> {
   // Filter out network/resource loading errors
   if (isNetworkOrResourceError(value, event)) {
     console.warn("Network/Resource error (ignored by error overlay):", value);
@@ -89,18 +115,77 @@ const handleRuntimeError = (
 
   console.error(value);
   const { message, stack } = normalizeError(value);
+
+  let errorFilePath: string | null = null;
+
+  // Try to decode source map and create code preview
+  let codePreviewHtml: string | undefined;
+  if (window.__surfpackBundledCode && window.__surfpackSourceFiles && stack) {
+    try {
+      const frames = await decodeStackTrace(
+        stack,
+        window.__surfpackBundledCode
+      );
+      if (frames.length > 0) {
+        const firstFrame = frames[0];
+        const line = firstFrame.original.line || "";
+        const column = firstFrame.original.column || "";
+        errorFilePath =
+          firstFrame.original.source?.replace("virtual:", "") +
+            `:${line}:${column}` || null;
+        if (
+          firstFrame.original.source &&
+          firstFrame.original.line &&
+          firstFrame.original.column !== null
+        ) {
+          const preview = createCodePreview(
+            firstFrame.original.source,
+            firstFrame.original.line,
+            firstFrame.original.column,
+            window.__surfpackSourceFiles,
+            5
+          );
+          if (preview) {
+            codePreviewHtml = renderCodePreviewHtml(preview);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to decode source map:", error);
+    }
+  }
+
   if (value instanceof CompilationError) {
     const title = origin
       ? `Compilation Error (${origin})`
       : "Compilation Error";
-    renderOverlay(title, message, stack);
+    if (showErrorOverlay) {
+      const filePath =
+        stack.split("\n")[1]?.split(": ERROR:")[0].replace("virtual:", "") ||
+        null;
+      renderErrorOverlay(title, message, stack, codePreviewHtml);
+      onErrorCallback({ message, stack, errorInFilePath: filePath });
+    }
     return;
   }
-  const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
-  renderOverlay(title, message, stack);
-};
 
-export const installGlobalErrorHandler = (): void => {
+  const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
+  onErrorCallback({ message, stack, errorInFilePath: errorFilePath });
+
+  if (showErrorOverlay) {
+    renderErrorOverlay(title, message, stack, codePreviewHtml);
+  }
+}
+
+export const installGlobalErrorHandler = ({
+  showErrorOverlay = false,
+  errorTypesSetup = ["runtime", "compilation"],
+  onErrorCallback = () => {},
+}: {
+  showErrorOverlay?: boolean;
+  errorTypesSetup?: ErrorOverlaySetup;
+  onErrorCallback?: (error: NormalizedError) => void;
+}) => {
   if (window.__surfpackErrorHandlerInstalled) {
     return;
   }
@@ -114,7 +199,13 @@ export const installGlobalErrorHandler = (): void => {
       }
       event.preventDefault();
       const error = event.error || new Error(event.message || "Unknown error");
-      handleRuntimeError(error, "error", event);
+      void handleGlobalError({
+        value: error,
+        origin: "error",
+        event,
+        onErrorCallback,
+        showErrorOverlay,
+      });
     },
     true
   );
@@ -126,12 +217,13 @@ export const installGlobalErrorHandler = (): void => {
         return;
       }
       event.preventDefault();
-      handleRuntimeError(event.reason, "unhandledrejection");
+      void handleGlobalError({
+        value: event.reason,
+        origin: "unhandledrejection",
+        onErrorCallback,
+        showErrorOverlay,
+      });
     },
     true
   );
-};
-
-export const showErrorOverlay = (error: unknown): void => {
-  handleRuntimeError(error);
 };

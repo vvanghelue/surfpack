@@ -130,6 +130,10 @@ export function useCodeMirror({
             fontFamily: "var(--surfpack-font-family-mono) !important",
             fontSize: "12px",
             fontWeight: "400",
+            scrollbarWidth: "none",
+          },
+          ".cm-scroller::-webkit-scrollbar": {
+            display: "none",
           },
         }),
       ],

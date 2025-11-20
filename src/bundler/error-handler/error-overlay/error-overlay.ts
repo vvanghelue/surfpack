@@ -36,10 +36,11 @@ const ensureOverlay = (): HTMLDivElement => {
   return overlay;
 };
 
-export const renderOverlay = (
+export const renderErrorOverlay = (
   title: string,
   message: string,
-  stack: string
+  stack: string,
+  codePreviewHtml?: string
 ): void => {
   const overlay = ensureOverlay();
   overlay.innerHTML = "";
@@ -55,6 +56,18 @@ export const renderOverlay = (
   summary.style.fontSize = "16px";
   summary.style.whiteSpace = "pre-wrap";
 
+  overlay.appendChild(heading);
+  overlay.appendChild(summary);
+
+  // Add code preview if available
+  if (codePreviewHtml) {
+    const previewContainer = document.createElement("div");
+    previewContainer.innerHTML = codePreviewHtml;
+    previewContainer.style.marginTop = "16px";
+    previewContainer.style.marginBottom = "16px";
+    overlay.appendChild(previewContainer);
+  }
+
   const stackBlock = document.createElement("pre");
   stackBlock.innerHTML = escapeHtml(stack);
   stackBlock.style.margin = "0";
@@ -66,8 +79,6 @@ export const renderOverlay = (
   stackBlock.style.whiteSpace = "pre-wrap";
   stackBlock.style.wordBreak = "break-word";
 
-  overlay.appendChild(heading);
-  overlay.appendChild(summary);
   overlay.appendChild(stackBlock);
 };
 

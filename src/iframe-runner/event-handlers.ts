@@ -1,10 +1,15 @@
 import { buildBundle, runBundle } from "../bundler/bundle.js";
 import {
-  renderOverlay,
   clearErrorOverlay,
-} from "../bundler/error-handler/error-overlay.js";
+  renderErrorOverlay,
+} from "../bundler/error-handler/error-overlay/error-overlay.js";
+import {
+  installGlobalErrorHandler,
+  NormalizedError,
+} from "../bundler/error-handler/global-error-handler.js";
 import { sanitizeFiles } from "../bundler/source-file.js";
 import {
+  MessageErrorOverlaySetup,
   MessageFilesUpdate,
   MessageLoadRoute,
   MessageToIframe,
@@ -14,20 +19,6 @@ import {
   applyRouteChangeFromParent,
   initializeRoutingState,
 } from "./routing-history-state.js";
-
-const isFilesUpdateMessage = (data: unknown) => {
-  if (typeof data !== "object" || data === null) {
-    return false;
-  }
-  return (data as { type?: unknown }).type === "files-update";
-};
-
-const isLoadRouteMessage = (data: unknown) => {
-  if (typeof data !== "object" || data === null) {
-    return false;
-  }
-  return (data as { type?: unknown }).type === "routing-history-load-route";
-};
 
 let buildCounter = 0;
 
@@ -50,43 +41,42 @@ const handleFilesUpdate = async (
   //   return;
   // }
 
-  try {
-    console.log("Building preview...");
-    const { code, css } = await buildBundle(files, entry);
-    if (token !== buildCounter) {
-      return;
-    }
-
-    if (!code.trim()) {
-      throw new Error("Bundle is empty. Check your entry file exports.");
-    }
-
-    await runBundle(code, css, files);
-    if (token !== buildCounter) {
-      return;
-    }
-
-    clearErrorOverlay();
-    postToParent({
-      type: "build-result-ack",
-      payload: { fileCount: files.length, success: true },
-    });
-    initializeRoutingState(rawPayload.initialRouteState);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    const stack = error instanceof Error ? error.stack || "" : "";
-    console.error(`Build failed:\n${message}`);
-    console.error(error);
-
-    renderOverlay("Compilation Error", message, stack);
-
-    if (token === buildCounter) {
-      postToParent({
-        type: "build-result-ack",
-        payload: { fileCount: files.length, success: false, error: message },
-      });
-    }
+  // try {
+  const { code, css } = await buildBundle(files, entry);
+  if (token !== buildCounter) {
+    return;
   }
+
+  if (!code.trim()) {
+    throw new Error("Bundle is empty. Check your entry file exports.");
+  }
+
+  await runBundle(code, css, files);
+  if (token !== buildCounter) {
+    return;
+  }
+
+  clearErrorOverlay();
+  postToParent({
+    type: "build-result-ack",
+    payload: { fileCount: files.length, success: true },
+  });
+  initializeRoutingState(rawPayload.initialRouteState);
+  // } catch (error) {
+  //   const message = error instanceof Error ? error.message : String(error);
+  //   const stack = error instanceof Error ? error.stack || "" : "";
+  //   console.error(`Build failed:\n${message}`);
+  //   console.error(error);
+
+  //   renderErrorOverlay("Compilation Error", message, stack);
+
+  //   if (token === buildCounter) {
+  //     postToParent({
+  //       type: "build-result-ack",
+  //       payload: { fileCount: files.length, success: false, error: message },
+  //     });
+  //   }
+  // }
 };
 
 export const registerParentMessageListener = (): void => {
@@ -95,14 +85,31 @@ export const registerParentMessageListener = (): void => {
       return;
     }
 
-    if (isFilesUpdateMessage(event.data)) {
-      if (event.data.type === "files-update") {
-        handleFilesUpdate(event.data.payload);
-      }
-    } else if (isLoadRouteMessage(event.data)) {
-      if (event.data.type === "routing-history-load-route") {
-        applyRouteChangeFromParent(event.data as MessageLoadRoute);
-      }
+    if (event.data.type === "files-update") {
+      handleFilesUpdate(event.data.payload);
+    }
+
+    if (event.data.type === "routing-history-load-route") {
+      applyRouteChangeFromParent(event.data as MessageLoadRoute);
+    }
+
+    if (event.data.type === "error-configuration-setup") {
+      const { payload } = event.data as MessageErrorOverlaySetup;
+      //if (payload.showErrorOverlay) {
+      installGlobalErrorHandler({
+        showErrorOverlay: payload.showErrorOverlay,
+        errorTypesSetup: payload.errorOverlayErrors,
+        onErrorCallback: (normalizedError: NormalizedError) => {
+          postToParent({
+            type: "app-handled-error",
+            payload: { error: normalizedError },
+          });
+        },
+      });
+      //}
+
+      // @TODO
+      // (event.data as MessageErrorOverlaySetup);
     }
   });
 };
