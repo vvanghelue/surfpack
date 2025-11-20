@@ -15,7 +15,7 @@ import {
   extractCssLoadedInHtml,
   extractFileEntryFromHtml,
 } from "./extract-html.js";
-import { clearErrorOverlay } from "./error-handler/error-overlay.js";
+import { clearErrorOverlay } from "./error-handler/error-overlay/error-overlay.js";
 
 declare global {
   interface Window {

@@ -4,8 +4,8 @@ import type {
   MessageToIframe,
 } from "../../../iframe-runner/iframe-messaging.js";
 import type {
+  DetailedNormalizedError,
   ErrorOverlaySetup,
-  NormalizedError,
 } from "../../../bundler/error-handler/global-error-handler.js";
 
 import React from "react";
@@ -23,7 +23,7 @@ export type PreviewProps = {
   onIframeReady?: () => void;
   showErrorOverlay?: boolean;
   errorOverlayErrors?: ErrorOverlaySetup;
-  onError?: (error: NormalizedError) => void;
+  onError?: (error: DetailedNormalizedError) => void;
 };
 
 export function Preview({

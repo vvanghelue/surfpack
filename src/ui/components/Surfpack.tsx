@@ -15,10 +15,9 @@ import { Preview } from "./Preview/Preview.js";
 import { ResizeHandle } from "./Resizer/ResizeHandle.js";
 import { useHorizontalResizers } from "../hooks/useHorizontalResizers.js";
 import {
+  DetailedNormalizedError,
   ErrorOverlaySetup,
-  NormalizedError,
 } from "../../bundler/error-handler/global-error-handler.js";
-import { ErrorType } from "../../bundler/error-handler/global-error-handler.js";
 
 export type SurfpackProps = {
   bundlerUrl: string;
@@ -37,7 +36,7 @@ export type SurfpackProps = {
   onIframeReady?: () => void;
   showErrorOverlay?: boolean;
   errorOverlayErrors?: ErrorOverlaySetup;
-  onError?: (error: NormalizedError) => void;
+  onError?: (error: DetailedNormalizedError) => void;
 };
 
 export function Surfpack(props: SurfpackProps) {

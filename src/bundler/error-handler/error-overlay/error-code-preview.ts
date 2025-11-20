@@ -1,4 +1,4 @@
-import type { RunnerSourceFile } from "../source-file.js";
+import type { RunnerSourceFile } from "../../source-file.js";
 
 export interface CodePreview {
   fileName: string;

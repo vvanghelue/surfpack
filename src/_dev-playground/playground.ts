@@ -194,6 +194,7 @@ let surfpack = init({
   showFileBrowser: checkboxes.showFileBrowser.checked,
   showNavigator: checkboxes.showNavigator.checked,
 
+  showErrorOverlay: true,
   onError: (error) => {
     console.log("Surfpack reported an error:", error);
   },

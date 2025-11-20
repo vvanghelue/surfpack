@@ -2,7 +2,7 @@ import { buildBundle, runBundle } from "../bundler/bundle.js";
 import {
   clearErrorOverlay,
   renderErrorOverlay,
-} from "../bundler/error-handler/error-overlay.js";
+} from "../bundler/error-handler/error-overlay/error-overlay.js";
 import {
   installGlobalErrorHandler,
   NormalizedError,

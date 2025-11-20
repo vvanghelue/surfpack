@@ -1,8 +1,11 @@
 import { CompilationError } from "../bundle.js";
 import type { RunnerSourceFile } from "../source-file.js";
-import { renderErrorOverlay } from "./error-overlay.js";
+import { renderErrorOverlay } from "./error-overlay/error-overlay.js";
 import { decodeStackTrace } from "./sourcemap-decoder.js";
-import { createCodePreview, renderCodePreviewHtml } from "./code-preview.js";
+import {
+  createCodePreview,
+  renderCodePreviewHtml,
+} from "./error-overlay/error-code-preview.js";
 
 const OVERLAY_TITLE = "Runtime Error";
 
@@ -14,6 +17,10 @@ export type ErrorOverlaySetup = ErrorType[] | "all";
 export type NormalizedError = {
   message: string;
   stack: string;
+};
+
+export type DetailedNormalizedError = NormalizedError & {
+  errorInFilePath?: string | null;
 };
 
 declare global {
@@ -90,7 +97,7 @@ type HandleRuntimeErrorParams = {
   value: unknown;
   origin?: string;
   event?: ErrorEvent;
-  onErrorCallback?: (error: NormalizedError) => void;
+  onErrorCallback?: (error: DetailedNormalizedError) => void;
   showErrorOverlay?: boolean;
 };
 export async function handleGlobalError({
@@ -108,7 +115,8 @@ export async function handleGlobalError({
 
   console.error(value);
   const { message, stack } = normalizeError(value);
-  onErrorCallback({ message, stack });
+
+  let errorFilePath: string | null = null;
 
   // Try to decode source map and create code preview
   let codePreviewHtml: string | undefined;
@@ -120,6 +128,11 @@ export async function handleGlobalError({
       );
       if (frames.length > 0) {
         const firstFrame = frames[0];
+        const line = firstFrame.original.line || "";
+        const column = firstFrame.original.column || "";
+        errorFilePath =
+          firstFrame.original.source?.replace("virtual:", "") +
+            `:${line}:${column}` || null;
         if (
           firstFrame.original.source &&
           firstFrame.original.line &&
@@ -147,11 +160,18 @@ export async function handleGlobalError({
       ? `Compilation Error (${origin})`
       : "Compilation Error";
     if (showErrorOverlay) {
+      const filePath =
+        stack.split("\n")[1]?.split(": ERROR:")[0].replace("virtual:", "") ||
+        null;
       renderErrorOverlay(title, message, stack, codePreviewHtml);
+      onErrorCallback({ message, stack, errorInFilePath: filePath });
     }
     return;
   }
+
   const title = origin ? `${OVERLAY_TITLE} (${origin})` : OVERLAY_TITLE;
+  onErrorCallback({ message, stack, errorInFilePath: errorFilePath });
+
   if (showErrorOverlay) {
     renderErrorOverlay(title, message, stack, codePreviewHtml);
   }
