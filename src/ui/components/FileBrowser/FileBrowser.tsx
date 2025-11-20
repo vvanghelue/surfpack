@@ -52,7 +52,6 @@ export function FileBrowser({
   className = "",
   onSelect,
 }: FileBrowserProps) {
-  console.log("FileBrowser render");
   const [internalActivePath, setInternalActivePath] = useState<string | null>(
     null
   );
@@ -62,13 +61,11 @@ export function FileBrowser({
 
   useEffect(() => {
     if (activePath !== undefined) {
-      console.log("set active path", activePath);
       setInternalActivePath(activePath);
     }
   }, [activePath]);
 
   const tree = useMemo<FileTreeNode[]>(() => {
-    console.log("buildTree");
     return buildFileTree(files);
   }, [files]);
 

@@ -39,7 +39,9 @@ const extractInlineSourceMap = (code: string): string | null => {
 /**
  * Parses a stack trace line to extract file, line, and column information
  */
-const parseStackTraceLine = (line: string): {
+const parseStackTraceLine = (
+  line: string
+): {
   functionName?: string;
   line: number;
   column: number;
@@ -95,14 +97,10 @@ export const decodeStackTrace = async (
       continue;
     }
 
-    console.log("Parsed stack line:", { line, parsed });
-
     const originalPosition = consumer.originalPositionFor({
       line: parsed.line,
       column: parsed.column,
     });
-
-    console.log("Original position:", originalPosition);
 
     if (originalPosition.source) {
       frames.push({
@@ -121,7 +119,6 @@ export const decodeStackTrace = async (
     }
   }
 
-  console.log("Decoded frames:", frames);
   return frames;
 };
 

@@ -22,26 +22,21 @@ const findSourceFile = (
 ): RunnerSourceFile | null => {
   // Remove namespace prefixes like "virtual:", "file:", etc.
   let cleanPath = filePath.replace(/^[a-zA-Z]+:/, "");
-  
+
   // Normalize the path by removing leading slashes and ./
   cleanPath = cleanPath.replace(/^\.?\//, "");
-
-  console.log("Looking for file:", { original: filePath, cleaned: cleanPath });
-  console.log("Available files:", sourceFiles.map(f => f.path));
 
   for (const file of sourceFiles) {
     const filePathNormalized = file.path.replace(/^\.?\//, "");
     if (
-      filePathNormalized === cleanPath || 
-      file.path === filePath || 
+      filePathNormalized === cleanPath ||
+      file.path === filePath ||
       file.path === cleanPath
     ) {
-      console.log("Found matching file:", file.path);
       return file;
     }
   }
 
-  console.warn("No matching file found for:", filePath);
   return null;
 };
 
@@ -101,7 +96,7 @@ const escapeHtml = (text: string): string => {
  */
 const highlightSyntax = (escapedCode: string): string => {
   let highlighted = escapedCode;
-  
+
   // Comments (do first to avoid highlighting keywords in comments)
   highlighted = highlighted.replace(
     /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g,
@@ -137,7 +132,9 @@ export const renderCodePreviewHtml = (preview: CodePreview): string => {
     .map((line) => {
       const lineNumWidth = "60px";
       const lineNumColor = line.isErrorLine ? "#ff5555" : "#666";
-      const bgColor = line.isErrorLine ? "rgba(255, 85, 85, 0.1)" : "transparent";
+      const bgColor = line.isErrorLine
+        ? "rgba(255, 85, 85, 0.1)"
+        : "transparent";
       const borderLeft = line.isErrorLine
         ? "3px solid #ff5555"
         : "3px solid transparent";
@@ -146,7 +143,11 @@ export const renderCodePreviewHtml = (preview: CodePreview): string => {
       const highlightedContent = highlightSyntax(escapedContent);
 
       let errorPointer = "";
-      if (line.isErrorLine && line.errorColumn !== undefined && line.errorColumn > 0) {
+      if (
+        line.isErrorLine &&
+        line.errorColumn !== undefined &&
+        line.errorColumn > 0
+      ) {
         const spaces = " ".repeat(Math.max(0, line.errorColumn - 1));
         errorPointer = `
           <div style="

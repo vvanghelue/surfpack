@@ -155,11 +155,8 @@ export const buildBundle = async (
     if (!entry && fileMap.has("index.html")) {
       // some heuristics on the presence of a <script/> with a src attribute matching a file
       entry = extractFileEntryFromHtml(fileMap.get("index.html") || "", files);
-      console.log({ entryFromHtml: entry });
     }
   }
-
-  console.log({ entry });
 
   const entryPath = normalizePath(entry);
   if (!entryPath || !fileMap.has(entryPath)) {
@@ -247,7 +244,6 @@ export const runBundle = async (
     ensureIndexHtml(document, indexHtmlFile.content ?? "");
   }
 
-  console.log({ cssChunks });
   applyCss(cssChunks);
 
   if (currentModuleUrl) {

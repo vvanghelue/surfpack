@@ -19,7 +19,6 @@ export type PreviewProps = {
   bundlerUrl: string;
   initialRoute?: string;
   areaRef: MutableRefObject<HTMLDivElement | null>;
-  // containerRef: MutableRefObject<HTMLDivElement | null>;
   showNavigator: boolean;
   onIframeReady?: () => void;
   showErrorOverlay?: boolean;
@@ -56,7 +55,6 @@ export function Preview({
   }
 
   function sendFiles(files: RunnerFile[], entry?: string) {
-    console.log("[iframe handler] sendFiles called with route:", route);
     const message: MessageFilesUpdate = {
       type: "files-update",
       payload: {
@@ -96,7 +94,6 @@ export function Preview({
     }
 
     if (messageData.type === "build-result-ack") {
-      console.log("build-result-ack");
       if (onIframeReady) {
         onIframeReady();
       }
@@ -107,7 +104,6 @@ export function Preview({
     }
 
     if (messageData.type === "app-handled-error") {
-      console.log("Received error from iframe:", messageData.payload.error);
       if (onError) {
         onError(messageData.payload.error);
       }
@@ -135,7 +131,6 @@ export function Preview({
               setRoute(newRoute);
             }}
             onRefresh={() => {
-              console.log("click on refresh button");
               isIframeReady.current = false;
               if (iframeRef.current) {
                 iframeRef.current.src = iframeRef.current.src;

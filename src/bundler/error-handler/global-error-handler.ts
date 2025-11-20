@@ -166,8 +166,6 @@ export const installGlobalErrorHandler = ({
   errorTypesSetup?: ErrorOverlaySetup;
   onErrorCallback?: (error: NormalizedError) => void;
 }) => {
-  console.log("Installing global error handler...", errorTypesSetup);
-
   if (window.__surfpackErrorHandlerInstalled) {
     return;
   }

@@ -41,7 +41,6 @@ export type SurfpackProps = {
 };
 
 export function Surfpack(props: SurfpackProps) {
-  console.log("Rendering Surfpack component");
   const {
     files = [],
     theme = "device-settings",
@@ -186,7 +185,6 @@ export function Surfpack(props: SurfpackProps) {
             theme={theme}
             debounceDelay={debounceDelay}
             onChange={(file: RunnerFile) => {
-              console.log("onChange");
               // should find and replace the file in the files array, if it dont exists, it add it
               const newFiles = [...internalFiles];
               const index = newFiles.findIndex(

@@ -27,6 +27,5 @@ export async function standaloneRunner(options: StandaloneRunnerOptions) {
     throw new Error("Bundle is empty. Check your entry file exports.");
   }
 
-  console.log({ code });
   await runBundle(code, css, files);
 }
