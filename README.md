@@ -4,7 +4,7 @@ Run JavaScript/TypeScript code directly in the browser with zero bundling.
 
 ## 🌐 Online Demo
 
-**[🚀 Try it now](https://vvanghelue.github.io/surfpack/online/online-demo.html)**
+**[🚀 Try it now](https://vvanghelue.github.io/surfpack/demo/online-demo.html)**
 
 ## 💻 Examples
 
