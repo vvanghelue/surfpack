@@ -88,6 +88,7 @@ export function Preview({
     const messageData = event.data as MessageFromIframe;
 
     if (messageData.type === "iframe-ready") {
+      console.log("iframe-ready");
       isIframeReady.current = true;
       sendErrorOverlaySetup();
       sendFiles(files, entryFile);
@@ -111,9 +112,10 @@ export function Preview({
   }
 
   React.useEffect(() => {
+    console.log("Setting up iframe message listener");
     window.addEventListener("message", onIframePostMessage);
     return () => window.removeEventListener("message", onIframePostMessage);
-  }, [route]);
+  }, [route, files, entryFile]);
 
   return (
     <div ref={areaRef} className="surfpack-iframe-bundler-container">

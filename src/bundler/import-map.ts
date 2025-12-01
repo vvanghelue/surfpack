@@ -10,6 +10,9 @@ const generateImportMapFromDependencies = (
     // Clean version string (remove ^ ~ etc.)
     const cleanVersion = version.replace(/^[\^~]/, "");
     imports[packageName] = `https://esm.sh/${packageName}@${cleanVersion}`;
+    // imports[packageName] = `https://esm.sh/${packageName}@${cleanVersion}`;
+
+    // console.log("imports[packageName]", imports[packageName]);
 
     // Add React JSX runtime imports when React is found
     if (packageName === "react") {

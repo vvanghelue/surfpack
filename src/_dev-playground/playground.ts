@@ -2,6 +2,7 @@ import { reactApp } from "./code-templates/react-template.js";
 import { reactRuntimeErrorApp } from "./code-templates/react-runtime-error.js";
 import { reactRouterApp } from "./code-templates/react-router-template.js";
 import { vanillaJsTodoApp } from "./code-templates/vanilla-js-todo.js";
+import { rechartsApp } from "./code-templates/recharts-template.js";
 import { init, type RunnerFile } from "../index.js";
 
 type Template = {
@@ -17,6 +18,7 @@ const templates: Record<string, Template> = {
   "react-template": reactApp,
   "react-runtime-error": reactRuntimeErrorApp,
   "vanilla-js-todo": vanillaJsTodoApp,
+  "recharts-demo": rechartsApp,
 };
 
 let {

@@ -273,6 +273,21 @@ export default Home;
       content: `import React from "react";
 
 const About: React.FC = () => {
+
+  const structureExample = \`
+            src/
+            ├── App.tsx              # Main app with router setup
+            ├── components/
+            │   ├── Layout.tsx       # Main layout wrapper
+            │   └── Navigation.tsx   # Navigation component
+            └── pages/
+                ├── Home.tsx         # Home page
+                ├── About.tsx        # About page
+                ├── Contact.tsx      # Contact page
+                ├── Counter.tsx      # Interactive counter demo
+                └── NotFound.tsx     # 404 error page
+  \`;
+
   return (
     <div className="page">
       <h1>About This Demo</h1>
@@ -282,7 +297,6 @@ const About: React.FC = () => {
           <li><strong>React 18:</strong> Modern React with hooks and concurrent features</li>
           <li><strong>React Router DOM v6:</strong> Declarative routing for React applications</li>
           <li><strong>TypeScript:</strong> Type-safe JavaScript development</li>
-          <li><strong>CSS:</strong> Custom styling with modern CSS features</li>
         </ul>
       </div>
       
@@ -300,18 +314,8 @@ const About: React.FC = () => {
       
       <div className="card">
         <h2>Project Structure</h2>
-        <pre style={{ textAlign: "left", backgroundColor: "#f8f9fa", padding: "1rem", borderRadius: "4px" }}>
-          src/
-          ├── App.tsx              # Main app with router setup
-          ├── components/
-          │   ├── Layout.tsx       # Main layout wrapper
-          │   └── Navigation.tsx   # Navigation component
-          └── pages/
-              ├── Home.tsx         # Home page
-              ├── About.tsx        # About page
-              ├── Contact.tsx      # Contact page
-              ├── Counter.tsx      # Interactive counter demo
-              └── NotFound.tsx     # 404 error page
+        <pre style={{ textAlign: "left", backgroundColor: "#f8f9fa", padding: "1rem", borderRadius: "4px", lineBreak: "pre-wrap" }}>
+          {structureExample}
         </pre>
       </div>
     </div>
