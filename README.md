@@ -20,7 +20,6 @@ Run JavaScript/TypeScript code directly in the browser with zero bundling.
 import { init } from "surfpack";
 
 const surfpack = init({
-  bundlerUrl: "./bundler.html",
   container: document.getElementById("app"),
   files: [
     {
