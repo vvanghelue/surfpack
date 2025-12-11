@@ -176,6 +176,62 @@ const styles = `
         overflow: hidden;
         width: 480px;
     }
+    .surfpack-code-editor-container {
+    }
+    .surfpack-code-editor-files-tabs-container {
+        position: relative;
+        user-select: none;
+    }
+    .surfpack-code-editor-files-tabs {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 12px;
+        ___border-bottom: 1px solid var(--surfpack-border);
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+    }
+    .surfpack-code-editor-files-tabs-fader {
+        content: "";
+        width: 64px;
+        flex-shrink: 0;
+        /* Fader background */
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), var(--surfpack-background));
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 10
+    }
+    .surfpack-code-editor-files-tabs-item {
+        border-radius: 99px;
+        padding: 4px 12px;
+        padding-right: 6px;
+        display:flex;
+        align-items:center;
+        gap: 4px;
+        background: color-mix(in srgb, var(--surfpack-foreground) 3%, transparent);
+        cursor:pointer;
+        flex-shrink: 0;
+    }
+    .surfpack-code-editor-files-tabs-item:hover {
+        background: color-mix(in srgb, var(--surfpack-foreground) 12%, transparent);
+    }
+    .surfpack-code-editor-files-tabs-item--selected {
+        __background: color-mix(in srgb, var(--surfpack-foreground) 12%, transparent);
+        outline: 1px solid var(--surfpack-accent);
+    }
+
+    .surfpack-code-editor-files-tabs-item-close-icon {
+        height: 12px;
+        opacity: .7;
+    }
+    .surfpack-code-editor-files-tabs-item-close-icon:hover {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 
     /* Preview Area Styles */
     .surfpack-iframe-bundler-container {

@@ -1,6 +1,6 @@
 {
   "name": "surfpack",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "Run your JavaScript/TypeScript code directly in the browser with zero bundling.",
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.4",
     "@uiw/codemirror-theme-vscode": "^4.25.3",
+    "clsx": "^2.1.1",
     "codemirror": "^6.0.2",
     "lucide": "^0.553.0",
     "lucide-react": "^0.553.0",

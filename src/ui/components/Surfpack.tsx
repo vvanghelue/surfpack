@@ -74,9 +74,11 @@ export function Surfpack(props: SurfpackProps) {
     }
   }, [props.activeFilePath]);
 
-  const activeFile = files.find(
+  const activeFile = internalFiles.find(
     (candidate) => candidate.path === internalActivePath
   );
+
+  console.log("activeFile.content", activeFile?.content);
 
   // Apply global styles once
   useEffect(() => {
@@ -92,12 +94,6 @@ export function Surfpack(props: SurfpackProps) {
     if (theme === "dark") el.classList.add("dark-mode");
     else if (theme === "light") el.classList.add("light-mode");
   }, [theme]);
-
-  useEffect(() => {
-    if (props.activeFilePath !== undefined) {
-      setInternalActivePath(props.activeFilePath);
-    }
-  }, [props.activeFilePath]);
 
   function handleFileOpen(file: RunnerFile) {
     setInternalActivePath(file.path);
@@ -196,6 +192,15 @@ export function Surfpack(props: SurfpackProps) {
               }
               setInternalFiles(newFiles);
             }}
+            onSelectFileFromTabs={(newSelectedFile) => {
+              const file = internalFiles.find(
+                (candidate) => candidate.path === newSelectedFile
+              );
+              if (file) {
+                setInternalActivePath(file.path);
+              }
+            }}
+            selectedFilePath={internalActivePath}
           />
         ) : null}
       </div>
