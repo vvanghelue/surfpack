@@ -1,6 +1,6 @@
 # Surfpack
 
-Run JavaScript/TypeScript code directly in the browser with zero bundling.
+Run react web apps code directly in the browser with instant browser-bundling
 
 ## Features
 

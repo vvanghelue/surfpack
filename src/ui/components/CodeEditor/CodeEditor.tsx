@@ -8,7 +8,7 @@ export type CodeEditorProps = {
   theme: "light" | "dark" | "device-settings";
   debounceDelay?: number;
   onChange?: (file: RunnerFile) => void;
-  onSelectFileFromTabs: (filePath: string) => void;
+  onSelectFileFromTabs: (filePath: string | null) => void;
   selectedFilePath?: string | null;
 };
 
@@ -47,38 +47,32 @@ export function CodeEditor({
     onChange,
   });
 
-  // const fakeOpenedFiles = [
-  //   "src/index.js",
-  //   "src/App.js",
-  //   "src/components/Button.js",
-  //   "src/components/Header.js",
-  //   "src/utils/helpers.js",
-  //   "src/styles/main.css",
-  //   "src/config/settings.json",
-  //   "src/hooks/useAuth.js",
-  //   "src/services/api.js",
-  //   "src/constants/index.js",
-  // ];
-
   return (
     <div
       className="surfpack-code-editor-container"
       style={{ height: "100%", width: "100%" }}
     >
       <FileTabs
-        // openedFiles={fakeOpenedFiles}
-        // selectedFile={fakeOpenedFiles[3]}
         openedFiles={openedFiles}
         selectedFile={selectedFilePath}
         onSelectFile={(newSelectedFilePath) => {
           onSelectFileFromTabs(newSelectedFilePath);
         }}
         onCloseFile={(closedFilePath) => {
-          // debugger;
-          // remove closedFile from openedFiles
-          setOpenedFiles((prevOpenedFiles) =>
-            prevOpenedFiles.filter((file) => file !== closedFilePath)
+          const newOpenedFiles = openedFiles.filter(
+            (file) => file !== closedFilePath
           );
+          setOpenedFiles(newOpenedFiles);
+
+          if (file?.path === closedFilePath) {
+            const lastOpenedFile =
+              newOpenedFiles[newOpenedFiles.length - 1] || null;
+            if (lastOpenedFile) {
+              onSelectFileFromTabs(lastOpenedFile);
+            } else {
+              onSelectFileFromTabs(null);
+            }
+          }
         }}
       />
       <div

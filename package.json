@@ -1,6 +1,6 @@
 {
   "name": "surfpack",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "Run your JavaScript/TypeScript code directly in the browser with zero bundling.",
   "repository": {
     "type": "git",

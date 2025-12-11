@@ -187,6 +187,7 @@ const styles = `
         align-items: center;
         gap: 4px;
         padding: 12px;
+        padding-bottom: 4px;
         ___border-bottom: 1px solid var(--surfpack-border);
         overflow-x: auto;
         scrollbar-width: thin;
@@ -220,8 +221,8 @@ const styles = `
         background: color-mix(in srgb, var(--surfpack-foreground) 12%, transparent);
     }
     .surfpack-code-editor-files-tabs-item--selected {
-        __background: color-mix(in srgb, var(--surfpack-foreground) 12%, transparent);
-        outline: 1px solid var(--surfpack-accent);
+        background: color-mix(in srgb, var(--surfpack-foreground) 12%, transparent);
+        __outline: 1px solid var(--surfpack-accent);
     }
 
     .surfpack-code-editor-files-tabs-item-close-icon {
